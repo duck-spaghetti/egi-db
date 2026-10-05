@@ -1,0 +1,8 @@
+%syntax-version=1.0.0
+%project=egi_database
+%uri=https://github.com/duck-spaghetti/egi-database
+
+foundation 2026-10-05T12:00:00Z Marco <marco@egi.invalid> # Typed identity, immutable revisions and trusted actors
+evidence [foundation] 2026-10-05T12:01:00Z Marco <marco@egi.invalid> # Immutable source observations and accountable selections
+canonical [evidence] 2026-10-05T12:02:00Z Marco <marco@egi.invalid> # Typed drafts, role-bearing relationships and territorial geography
+publication [canonical] 2026-10-05T12:03:00Z Marco <marco@egi.invalid> # Controlled publication, scoped verification and new-revision restoration

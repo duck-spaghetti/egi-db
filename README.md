@@ -1,26 +1,35 @@
 # EGI canonical database
 
-This repository currently contains planning and agent documentation only.
-PostgreSQL/PostGIS, `psql` and Sqitch are selected for the future implementation.
-Data loading will use a separately designed bootstrap. A future SQLite distribution
-will be generated from the canonical dataset for read-only offline use.
+PostgreSQL/PostGIS is EGI's authoritative database. Sqitch manages structure;
+real-data population will use a separate bootstrap. Future SQLite files are
+read-only offline distributions of approved canonical information.
 
-Start with [AGENTS.md](AGENTS.md). The [specification v1.1](docs/design/specification.md)
-consolidates the selected behaviors. The [action plan r0.2](docs/design/implementation-plan.md)
-records the approved approach/P1/P2; implementation remains unstarted and separately authorized. GitHub Issues is selected;
-[duck-spaghetti/egi-database](https://github.com/duck-spaghetti/egi-database) is configured
-as origin and the approved task set is published as issues #1–#10 under the
-[tracker conventions](docs/agents/issue-tracker.md). Local documents remain uncommitted/unpushed.
+The first implementation checkpoint (#1–#4) includes typed identity/revisions,
+retained source evidence, canonical drafts, controlled publication, scoped
+verification and new-revision restoration. It is under grouped stepwise review;
+no real source data, application or exporter is delivered.
 
- The [schema proposal](docs/design/schema-proposal.md)
-contains proposed tables, columns, cardinalities, constraints, revision/restoration and
-public/HSDS/SQLite projection contracts. The domain interview is consolidated; the
-proposal awaits discussion and technical review and is not approved for implementation.
+## Start here
 
- The [working design](docs/design/canonical-database.md)
-records requirements, findings, architecture proposals and the interview. It is
-not yet an approved specification or an implementation plan.
+- [AGENTS.md](AGENTS.md): execution scope and decision boundaries.
+- [Specification v1.1](docs/design/specification.md): approved behavior.
+- [Action plan r0.2](docs/design/implementation-plan.md): approved sequence, actual
+  issue mapping and current execution evidence.
+- [Setup and verification](docs/implementation/setup.md): native runtime and the
+  dedicated disposable contract runner.
+- [Revision operations](docs/implementation/operations.md): aggregate input,
+  publication/restore, trusted actors and errors.
+- [Structural proposal](docs/design/schema-proposal.md), [design ledger](docs/design/canonical-database.md)
+  and [API/source inventory](docs/design/api-and-data-inventory.md): design basis and evidence.
 
-The [API/data inventory](docs/design/api-and-data-inventory.md) records the earlier
-app and sources examined. Source files remain in their existing locations.
-No migrations, database instance, bootstrap or SQLite artifact have been created.
+## Development workflow
+
+[duck-spaghetti/egi-database](https://github.com/duck-spaghetti/egi-database) is the
+private origin. Development uses dev; completed reviewed development integrates
+into master. The initial remote main commit is preserved. Implementation happens
+on isolated task branches/worktrees from fetched dev; checkpoint approval and
+external delivery are recorded separately in the action plan.
+
+The first checkpoint pauses after #4. Weekly hours/calendar, territorial taxonomy,
+dynamic translations and the full public projection follow in #5–#9 after continuation.
+The integrated whole-set acceptance ticket #10 follows that group.

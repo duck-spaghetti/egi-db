@@ -24,6 +24,8 @@ Follow the shared workspace [AGENTS.md](../AGENTS.md) for autonomy, execution
 approval, whole-set/stepwise mode, completion and external Git/delivery boundaries.
 This repository remains in that shared workspace; local rules specialize the
 database component. Keep shared rules authoritative in the parent entrypoint.
+When the parent entrypoint is absent in a worktree/clone, read the
+[worktree baseline](docs/agents/worktree-baseline.md).
 
 ## Read when relevant
 

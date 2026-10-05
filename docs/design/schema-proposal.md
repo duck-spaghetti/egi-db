@@ -7,6 +7,10 @@ Current behavior contract: [specification v1.1](specification.md).
 Implementation approach: [action plan r0.2](implementation-plan.md), recording the approved approach
 and environment/verification choices. Detailed SQL is not implied by structural acceptance.
 
+Current execution scope and evidence are recorded in the action plan; the first
+#1–#4 implementation now exists in an isolated task worktree. The proposal-stage
+status/statements below are retained as design history, not a claim that no code exists.
+
 This document consolidates the design interview into a relational schema proposal.
 The product requirements below are selected. Exact tables, columns, types, indexes
 and implementation mechanisms are recommendations to review, not deployed DDL.

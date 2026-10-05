@@ -40,3 +40,15 @@ schemas. SQLite exports need referential integrity, consistent identifiers,
 publication filtering, coordinate consistency and consumer-version checks.
 Spatial query tests require PostgreSQL/PostGIS when those operations are in scope.
 No test runner, CI, linter or typing checker is selected by this documentation task.
+
+## First implementation checkpoint
+
+The #1–#4 group now supplies Sqitch deploy/revert/verify changes and native SQL
+contract fixtures. Read the setup/operations guides under docs/implementation for
+the actual commands and controlled-write contract. Synthetic fixtures remain
+separate from real-data bootstrap. Future migrations extend owned-aggregate restore
+and its checks when they add versioned child tables. Preserve immutable released
+migrations; the current initial set remains under checkpoint review.
+
+If the shared parent guides are absent in a standalone clone/worktree, use the
+[worktree baseline](worktree-baseline.md) and the database-specific execution record.

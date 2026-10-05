@@ -49,3 +49,6 @@ and operations, dedicated disposable PostgreSQL/PostGIS verification and synthet
 checks. Existing server/data and original app/sources remain untouched.
 Implementation delivery and final merge require verified reviewable results; the
 current bootstrap push is specifically authorized. Do not advance past checkpoint #4.
+
+If the shared parent guides are absent in a standalone clone/worktree, use the
+[worktree baseline](worktree-baseline.md) and the database-specific execution record.

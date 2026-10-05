@@ -1,7 +1,7 @@
 # EGI canonical database specification v1.1
 
 Date: 2026-10-05. Status: **consolidated specification with approved implementation approach;
-implementation not authorized or started**.
+first implementation group authorized; execution tracked in the action plan**.
 
 The user accepted the existing structure as sufficient and explicitly requested
 `to-spec`, followed by `plan-with-docs`. This document synthesizes settled decisions;
@@ -208,3 +208,14 @@ local documentation representation during specification/planning. Repository cre
 and issue publication are later explicitly scoped actions.
 No issue IDs, tracker labels or remote delivery are implied. The approach and P1/P2 are confirmed; actual issue publication/implementation
 remain subsequent separately scoped phases. See the approved plan r0.2.
+
+## Execution clarifications, 2026-10-05
+
+The user authorized grouped stepwise implementation through #1–#4 and explicitly
+invoked execute-reviewed-task. Self-approval is allowed only with both propose and
+approve capabilities for all involved territories. Temporarily closed services
+remain discoverable with their explicit state; defunct services retain direct access
+and leave ordinary discovery. These resolve the existing technical policy choices
+without changing the approved product scope. The action plan records actual
+implementation/evidence; proposal-stage statements above are not current execution
+status. Further groups require checkpoint continuation.

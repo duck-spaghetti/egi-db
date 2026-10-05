@@ -235,3 +235,12 @@ with “va benissimo”; issues #1–#10 were published and their exact bodies/n
 dependencies verified. See the action plan’s published mapping. No implementation,
 commit/push, installation or DB connection occurred. Execution mode and Git bootstrap
 remain implementation prerequisites.
+
+## First implementation checkpoint, 2026-10-05
+
+The user authorized grouped stepwise execution using execute-reviewed-task and
+selected dev → master. Bootstrap documentation was committed/pushed to dev; master
+retains the remote initialization base and is the default branch. Main is preserved.
+Code resides on the isolated task branch/worktree recorded in the action plan.
+The user confirmed territorial self-approval with both capabilities and visibility
+of temporarily closed services. Current scope is #1–#4; pause before #5–#9.

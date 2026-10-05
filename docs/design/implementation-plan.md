@@ -1,6 +1,6 @@
 # EGI database action plan r0.2
 
-Date: 2026-10-05. Status: **approved planning basis; implementation not authorized or started**.
+Date: 2026-10-05. Status: **approved execution basis; first group implemented locally and awaiting checkpoint review**.
 
 ## Basis and approval
 
@@ -381,11 +381,11 @@ without blocking the structural set's applicable acceptance contracts.
 | Specification | v1.1 consolidates the selected test seam; structural/domain basis unchanged |
 | Plan | r0.1 approach and P1/P2 confirmed by the user; r0.2 is their approved consolidation |
 | Tracker | GitHub duck-spaghetti/egi-database; approved issues #1–#10 published with native dependencies |
-| Execution mode | Not selected for any implementation set |
-| Implementation | Not started; no SQL/migrations/bootstrap/tests created |
-| Environment actions | Read-only executable/control-file inspection only; no DB connection/service start/install |
-| Git delivery | origin configured by user request; no commit, push or PR performed |
-| Evidence | Document synthesis and link/content checks only; no implementation verification results |
+| Execution mode | Grouped stepwise: #1–#4, then #5–#9, then #10; pause at current #4 checkpoint |
+| Implementation | #1–#4 implemented and verified locally; later groups not started; no real-data bootstrap |
+| Environment actions | Contained Sqitch/driver setup; new native PostgreSQL/PostGIS disposable clusters only; existing data/server untouched |
+| Git delivery | Documentation commit cf9197e pushed to dev; master/default set at preserved initialization base; product diff remains local |
+| Evidence | Fresh Sqitch deploy/verify/revert/redeploy, native SQL contracts and two-session concurrency passed; self-review performed |
 
 Approval is recorded above. This phase concludes at the agreed planning boundary;
 issue creation and execution are subsequent phases.
@@ -453,3 +453,62 @@ and operations, dedicated disposable PostgreSQL/PostGIS verification and synthet
 checks. Existing server/data and original app/sources remain untouched.
 Implementation delivery and final merge require verified reviewable results; the
 current bootstrap push is specifically authorized. Do not advance past checkpoint #4.
+
+## Checkpoint #1–#4 execution evidence, 2026-10-05
+
+- Approved basis: specification v1.1, plan r0.2 and issues #1–#4; user-selected
+  execute-reviewed-task, grouped stepwise mode. Pause before #5–#9.
+- Development: dev; integration target/default branch: master. Main was retained.
+  Bootstrap preserves remote initialization 87cc9d3d1b1637f59b4b26e570fa5b86e8a63369.
+  Documentation commit cf9197e5d82acc0d9de2e25feec519b7c99686ce was pushed to dev.
+- Verified task base: origin/dev at that documentation commit. Branch:
+  task/egi-database-01-04. Worktree:
+  /Users/marco-macbook/Documents/Codex/2026-10-05/dob/work/egi-database-01-04.
+- Implementation delivery: local diff, not committed/pushed or merged. No PR opened
+  and no issue closed. Checkpoint review precedes further execution/delivery.
+- Policies confirmed by user: self-approval with propose/approve for all affected
+  territories; temporary closure stays discoverable with explicit status.
+- Actual runtime: PostgreSQL 18.3, PostGIS 3.6.0, Sqitch 1.6.1, DBD::Pg 3.21.2.
+  Sqitch is contained in the session workspace after the Homebrew bundle failure;
+  selected psql/server binaries remain /Library/PostgreSQL/18/bin.
+
+| Issue | Local outcome and acceptance evidence | Delivery state |
+| --- | --- | --- |
+| #1 | Native disposable setup; foundation Sqitch deploy/verify; exact type/owner failures, immutable sealed revisions and original bindings; public write denial | Verified local, awaiting checkpoint review |
+| #2 | Repeated capture observations reuse immutable record content; dataset-scoped keys; distinct processor interpretations; conflicting/negative assertions and accountable typed selection/link evidence; exact intended FK/immutability failures | Verified local, awaiting checkpoint review |
+| #3 | Typed service/org/place/territory drafts, role links, structured contacts/access; moves preserve identity/history, remote and area-only offers avoid fake coordinates; scalar-derived geometry and publication diagnostics checked | Verified local, awaiting checkpoint review |
+| #4 | Exact save/review/publish/restore operations; pending shared/service edits hidden; independent shared heads preserved on restore; component verification; closure discovery; scoped reader/writer denial and valid scoped self-approval; concurrent stale-base rejection | Verified local, awaiting checkpoint review |
+
+Final reproducible command: scripts/verify-disposable.sh with the contained Sqitch
+PERL5LIB/executable selected explicitly. Exit 0. It created a fresh cluster, deployed
+all four changes, ran Sqitch verify and all four transaction-local SQL contracts,
+exercised two real concurrent connections, reverted/redeployed and reran verify and
+all four contracts. Every stage passed. Expected failures assert intended SQLSTATE
+and message; the concurrency conflict returned 40001/stale_base with exactly one
+new revision. The runner stopped/removed its own cluster. No existing database,
+real sources or original app was changed. Whitespace checks passed.
+
+Self-review checked scope, typed FKs/content bindings, sealed aggregate ownership,
+trusted session-user identity, territorial capabilities, shared-consumer validation,
+atomic heads/audit/public sequence and recovery limits. No independent review was
+requested or performed. Corrections were followed by fresh full runner verification.
+
+The restore inventory covers the current #1–#4 typed tables. Hours/calendar and
+taxonomy/i18n additions must extend it with regression checks; full AC06 schedule
+coverage and the rich public aging warning are later-group evidence, not claimed
+here. No automatic matching/selection engine, data bootstrap, schedules/calendar,
+full projection, HSDS/SQLite exporter or application is delivered. Production
+identity integration, freshness thresholds and recovery remain future setup/policy.
+
+Next step: human checkpoint review. Preserve the worktree and approvals; do not
+advance to #5–#9 until explicit continuation. Product commit/push/integration is
+separate from the completed initial documentation push.
+
+## Checkpoint review and delivery authorization, 2026-10-05
+
+The user accepted the #1–#4 review and explicitly requested push to dev, followed
+by execute-reviewed-task for the next group #5–#9. The pre-push disposable runner
+passed again. This commit delivers the reviewed first group; actual delivery SHA
+and the next group’s fetched base will be recorded after push. Grouped stepwise
+mode continues, with the next pause after #9. No master merge or #10 execution is
+authorized by this continuation.

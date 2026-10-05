@@ -27,3 +27,14 @@ and `writing-for-agents` support the current documentation/interview work.
 Keep readiness explicit in the design: interview in progress, proposed design,
 review-ready, reviewed, approved for implementation. Suggested implementation
 phases are not approved tickets or an execution plan.
+
+## Active execution agreement
+
+The user authorized execute-reviewed-task in grouped stepwise mode: #1–#4,
+#5–#9, then #10. Current checkpoint is #1–#4. The development base is dev; master
+is the completed integration target. Use the action plan’s execution record for
+actual branch/worktree, acceptance evidence and delivery state. Earlier design-only
+notes describe the initialization phase, not current authorization.
+
+If the shared parent guides are absent in a standalone clone/worktree, use the
+[worktree baseline](worktree-baseline.md) and the database-specific execution record.
