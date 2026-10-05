@@ -592,3 +592,91 @@ of issue #10 with execute-reviewed-task. Preserve grouped stepwise mode and paus
 at final acceptance review. This authorizes the coherent reviewed implementation
 commit and ordinary fast-forward dev delivery; master merge, production deployment
 and issue closure remain separate. The fetched origin/dev is still e03f2f9.
+
+## Issue #10 execution agreement, 2026-10-05
+
+The user confirmed reviewed #5–#9 push and #10 continuation. #5–#9 is delivered
+at 9d4013c6d1f53a134ace042ff3d9be95d101d137 on origin/dev; primary local dev
+was advanced by fast-forward. New branch task/egi-database-10 and worktree
+/Users/marco-macbook/Documents/Codex/2026-10-05/dob/work/egi-database-10 start
+from that exact fetched commit. Scope is integrated disposable lifecycle acceptance,
+AC01–AC22/AC25 matrix, scoped remediation and final operational documentation.
+Native Sqitch/psql and synthetic fixtures remain selected. Pause at final review;
+#10 delivery, master merge and production deployment are not part of this push scope.
+
+## Issue #10 final acceptance evidence, 2026-10-05
+
+Status: verified complete locally, self-reviewed, awaiting final human checkpoint
+review. First nine issues' implementation is delivered on dev at 9d4013c. Final-task
+tests/documentation remain an uncommitted diff on task/egi-database-10 from that
+exact fetched commit. No published migration or database/API behavior changed.
+
+Added tests/contract/00-clean.sql and 10-integrated.sql; extended the disposable
+runner to repeat real two-connection concurrency after redeploy and log actual
+target/runtime identity. Matrix: docs/implementation/acceptance.md covers every
+applicable AC01–AC22 and AC25; AC23/AC24 serializer/package checks are future scope,
+with structural/export boundaries stated explicitly. Automated source workers and
+matching remain later slices; retained evidence/manual selection are exercised.
+
+Final command: scripts/verify-disposable.sh with selected EGI_SQITCH/PERL5LIB and
+PostgreSQL 18 tools. Exit 0. Actual target: egi_contract in the newly created
+/private/tmp/egi-contract.enHRZN/data, private Unix socket, port 65432, TCP disabled.
+Runtime: PostgreSQL 18.3, PostGIS 3.6.0, Sqitch 1.6.1. The runner deployed the four
+first-group changes, checked their contracts, upgraded through #9, ran Sqitch verify,
+clean-data assertions and ten behavioral SQL contracts, then real concurrency. Full
+revert/redeploy repeated verify/clean/behavioral/concurrency checks successfully.
+The generated cluster was stopped/removed by the runner; existing databases and
+original app/sources were never selected. Evidence: work/execution/checkpoint-10.log
+and outputs/egi_database-checkpoint-10-verification.log.
+
+The integrated fixture exercises published movement with retained service identity,
+multiple providers/host independence, cross-territory membership vs coverage/access,
+chosen/competing/failed geocoding, source failure without closure, evidence-free
+draft rejection, complete approved aggregate restoration with independently current
+shared contacts, itinerant discovery on closed days, description-only translation,
+territorial language priorities and independent label/hierarchy edits after copying
+a frozen taxonomy release. Negative tests assert intended SQLSTATE/diagnostic.
+
+Review finding: the geocoding fixture initially expected a generic error fragment.
+Inspection showed selected_coordinates_mismatch; the expectation was corrected to
+that precise diagnostic and the full lifecycle rerun. No product remediation or
+weaker criterion was needed. Self-review covered scope, matrix, synthetic isolation,
+expected failure handling, setup/lineage/concurrency/recovery and deferred exports.
+git diff --check and sh -n scripts/verify-disposable.sh passed. The migration/plan
+diff against 9d4013c is empty. No independent review was requested or claimed.
+
+Documentation updated: README, AGENTS and collaboration/workflow records, native
+setup guide and acceptance matrix. Operations/directory guides retain detailed
+error, source lineage, concurrency, review policy and recovery contracts. Numerical
+freshness thresholds, real bootstrap, application identity/HTTP, HSDS recipes and
+validation, SQLite construction/consumer checks, and transport/self-service remain
+explicit future slices. Next step: final human review, then separately authorized
+#10 delivery/master integration. No PR, issue closure or production deployment occurred.
+
+## Initial migration consolidation authorization, 2026-10-05
+
+Before final delivery the user explicitly requested fewer initial changesets and
+numeric names for every deploy/revert/verify triplet. This authorizes an exception
+to the previous immutable released-migration rule for this initial baseline. The
+ten historical changes are consolidated into 001_foundation, 002_canonical,
+003_governance and 004_directory. Each change is atomic; section headings preserve
+logical readability. Final save/restore definitions replace transitional copies.
+Git history is retained; no force push or live database registry is rewritten.
+Only disposable clusters have been deployed in this session. An existing registry
+with old change names must use its old matching checkout for recovery, then a new
+disposable/empty target for this baseline; this is not an in-place registry upgrade.
+The runner's staged upgrade now targets 003_governance before 004_directory.
+The user also authorized final dev push, two-axis review, PR to master and closing
+all ten issues after their applicable acceptance evidence is verified.
+
+## Consolidated baseline verification, 2026-10-05
+
+The four numbered triplets passed the complete disposable runner with exit 0:
+staged deploy through 003_governance, first-group contracts, 004_directory deploy,
+Sqitch verify, clean-data assertions, all ten behavioral contracts and actual
+two-connection concurrency; full revert/redeploy repeated verification and contracts.
+Runtime remains PostgreSQL 18.3, PostGIS 3.6.0 and Sqitch 1.6.1. Evidence:
+work/execution/consolidated-release.log. The generated private cluster was removed.
+git diff --check and shell syntax verification are required before the delivery
+commit. Historical checkpoints above retain their original evidence and scope;
+this run verifies the current migration organization.

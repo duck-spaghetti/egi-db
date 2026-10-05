@@ -1,5 +1,5 @@
 #!/bin/sh
-# Reproduce the #1–#9 checkpoint on a newly created disposable cluster.
+# Reproduce integrated #10 acceptance on a newly created disposable cluster.
 set -eu
 EGI_PG_BIN=${EGI_PG_BIN:-/Library/PostgreSQL/18/bin}
 EGI_SQITCH=${EGI_SQITCH:-sqitch}
@@ -22,22 +22,26 @@ EGI_STARTED=1
 export PGHOST="$EGI_CLUSTER" PGPORT=65432 PGDATABASE=egi_contract
 export EGI_PSQL="$EGI_PG_BIN/psql"
 "$EGI_PG_BIN/createdb" "$PGDATABASE"
-"$EGI_PSQL" -X -v ON_ERROR_STOP=1 -c "SELECT current_database(),version();"
-"$EGI_SQITCH" deploy --to publication --db-client "$EGI_PSQL" db:pg:egi_contract
+"$EGI_SQITCH" --version
+"$EGI_PSQL" -X -v ON_ERROR_STOP=1 -c "SELECT current_database(),current_setting('data_directory') AS data_directory,current_setting('port') AS port,inet_server_addr() AS tcp_address,version();"
+"$EGI_SQITCH" deploy --to 003_governance --db-client "$EGI_PSQL" db:pg:egi_contract
 for EGI_CHECK in tests/contract/01-foundation.sql tests/contract/02-evidence.sql tests/contract/03-canonical.sql tests/contract/04-publication.sql; do
   "$EGI_PSQL" -X -v ON_ERROR_STOP=1 -f "$EGI_CHECK"
 done
 "$EGI_SQITCH" deploy --db-client "$EGI_PSQL" db:pg:egi_contract
 "$EGI_SQITCH" verify --db-client "$EGI_PSQL" db:pg:egi_contract
-for EGI_CHECK in tests/contract/01-foundation.sql tests/contract/02-evidence.sql tests/contract/03-canonical.sql tests/contract/04-publication.sql tests/contract/05-hours.sql tests/contract/06-calendar.sql tests/contract/07-taxonomy.sql tests/contract/08-translations.sql tests/contract/09-directory.sql; do
+"$EGI_PSQL" -X -v ON_ERROR_STOP=1 -f tests/contract/00-clean.sql
+for EGI_CHECK in tests/contract/01-foundation.sql tests/contract/02-evidence.sql tests/contract/03-canonical.sql tests/contract/04-publication.sql tests/contract/05-hours.sql tests/contract/06-calendar.sql tests/contract/07-taxonomy.sql tests/contract/08-translations.sql tests/contract/09-directory.sql tests/contract/10-integrated.sql; do
   "$EGI_PSQL" -X -v ON_ERROR_STOP=1 -f "$EGI_CHECK"
 done
 sh tests/contract/05-concurrency.sh
 "$EGI_SQITCH" revert -y --db-client "$EGI_PSQL" db:pg:egi_contract
 "$EGI_SQITCH" deploy --db-client "$EGI_PSQL" db:pg:egi_contract
 "$EGI_SQITCH" verify --db-client "$EGI_PSQL" db:pg:egi_contract
-for EGI_CHECK in tests/contract/01-foundation.sql tests/contract/02-evidence.sql tests/contract/03-canonical.sql tests/contract/04-publication.sql tests/contract/05-hours.sql tests/contract/06-calendar.sql tests/contract/07-taxonomy.sql tests/contract/08-translations.sql tests/contract/09-directory.sql; do
+"$EGI_PSQL" -X -v ON_ERROR_STOP=1 -f tests/contract/00-clean.sql
+for EGI_CHECK in tests/contract/01-foundation.sql tests/contract/02-evidence.sql tests/contract/03-canonical.sql tests/contract/04-publication.sql tests/contract/05-hours.sql tests/contract/06-calendar.sql tests/contract/07-taxonomy.sql tests/contract/08-translations.sql tests/contract/09-directory.sql tests/contract/10-integrated.sql; do
   "$EGI_PSQL" -X -v ON_ERROR_STOP=1 -f "$EGI_CHECK"
 done
+sh tests/contract/05-concurrency.sh
 "$EGI_PSQL" -X -v ON_ERROR_STOP=1 -c "SELECT postgis_full_version();"
-printf '%s\n' 'Checkpoint #1–#9: fresh deploy, structural verify, SQL contracts, concurrency and revert/redeploy passed.'
+printf '%s\n' 'Checkpoint #10: fresh deploy, structural verify, SQL contracts, concurrency and revert/redeploy passed.'

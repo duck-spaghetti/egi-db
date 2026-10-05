@@ -1,5 +1,9 @@
--- Deploy egi_database:canonical [evidence] to pg
+-- Deploy egi_database:002_canonical
 BEGIN;
+
+-- ============================================================================
+-- Canonical
+-- ============================================================================
 CREATE TABLE geo.territories (
  entity_id uuid PRIMARY KEY,
  entity_kind text NOT NULL DEFAULT 'territory' CHECK(entity_kind='territory'),
@@ -224,4 +228,5 @@ RETURNS TABLE(code text,field text) LANGUAGE sql STABLE SET search_path=pg_catal
 $$;
 REVOKE ALL ON ALL FUNCTIONS IN SCHEMA governance FROM PUBLIC;
 REVOKE ALL ON ALL TABLES IN SCHEMA data,geo FROM PUBLIC;
+
 COMMIT;

@@ -1,5 +1,9 @@
--- Deploy egi_database:publication [canonical] to pg
+-- Deploy egi_database:003_governance
 BEGIN;
+
+-- ============================================================================
+-- Publication
+-- ============================================================================
 CREATE TABLE governance.actor_grants (
  grant_id uuid PRIMARY KEY DEFAULT gen_random_uuid(), actor_id uuid NOT NULL REFERENCES governance.actors,
  capability text NOT NULL CHECK(capability IN ('propose','approve','publish','verify')),
@@ -133,13 +137,14 @@ DECLARE owner uuid:=COALESCE(entity,gen_random_uuid()); rev uuid; actor uuid:=go
  scopes uuid[]; item jsonb; component uuid; decision uuid; name_unit uuid; description_unit uuid;
  field text; allowed text[]; evidence jsonb:=COALESCE(body->'evidence'->'record','[]'::jsonb); n bigint;
 BEGIN
- IF kind NOT IN ('service','organization','location','territory') THEN RAISE EXCEPTION USING ERRCODE='22023', MESSAGE='unsupported_entity_kind'; END IF;
+ IF kind NOT IN ('service','organization','location','territory') AND NOT EXISTS(SELECT FROM governance.revision_extensions WHERE kind=ANY(entity_kinds)) THEN RAISE EXCEPTION USING ERRCODE='22023', MESSAGE='unsupported_entity_kind'; END IF;
  IF jsonb_typeof(body) IS DISTINCT FROM 'object' THEN RAISE EXCEPTION USING ERRCODE='22023', MESSAGE='body_must_be_object'; END IF;
- allowed:=ARRAY['name','original_language','contacts','territories','evidence']||CASE kind
+ allowed:=CASE WHEN kind IN ('service','organization','location','territory') THEN ARRAY['name','original_language','contacts','territories','evidence'] ELSE ARRAY['name','original_language','territories','evidence'] END||CASE kind
  WHEN 'service' THEN ARRAY['description','delivery_mode','operational_status','cost_state','cost_note','valid_from','valid_until','closure_date','closure_reason','place','organizations','conditions','contact_links','languages','coverage']
  WHEN 'location' THEN ARRAY['location_kind','latitude','longitude','coordinate_state','selected_geocoding_result_id','parent_location_id','addresses','organizations']
  WHEN 'organization' THEN ARRAY['description','organization_type','website']
- ELSE ARRAY['code','timezone_name','country_code','boundary_wkt'] END;
+ WHEN 'territory' THEN ARRAY['code','timezone_name','country_code','boundary_wkt'] ELSE ARRAY[]::text[] END;
+ SELECT allowed||COALESCE(array_agg(f),ARRAY[]::text[]) INTO allowed FROM governance.revision_extensions e CROSS JOIN unnest(e.body_fields) f WHERE kind=ANY(e.entity_kinds);
  IF EXISTS(SELECT FROM jsonb_object_keys(body) k WHERE NOT k=ANY(allowed)) THEN RAISE EXCEPTION USING ERRCODE='22023', MESSAGE='unsupported_body_field'; END IF;
  FOREACH field IN ARRAY ARRAY['name','description','original_language','cost_note','closure_reason','website','organization_type','location_kind'] LOOP
   IF body ? field AND jsonb_typeof(body->field) NOT IN ('string','null') THEN RAISE EXCEPTION USING ERRCODE='22023', MESSAGE='text_field_requires_string'; END IF;
@@ -153,7 +158,7 @@ BEGIN
   IF kind='service' THEN INSERT INTO data.services(entity_id) VALUES(owner);
   ELSIF kind='organization' THEN INSERT INTO data.organizations(entity_id) VALUES(owner);
   ELSIF kind='location' THEN INSERT INTO data.locations(entity_id) VALUES(owner);
-  ELSE INSERT INTO geo.territories(entity_id,code) VALUES(owner,body->>'code'); END IF;
+  ELSIF kind='territory' THEN INSERT INTO geo.territories(entity_id,code) VALUES(owner,body->>'code'); END IF;
  END IF;
  PERFORM governance.lock_expected(owner,expected_work,expected_public);
  IF NOT EXISTS(SELECT FROM data.entities WHERE entity_id=owner AND entity_kind=kind) THEN RAISE EXCEPTION USING ERRCODE='23514', MESSAGE='entity_kind_mismatch'; END IF;
@@ -164,7 +169,7 @@ BEGIN
  PERFORM governance.require_capability('propose',scopes);
  name_unit:=governance.bind_original(rev,owner,'name',body->>'name',body->>'original_language');
  description_unit:=governance.bind_original(rev,owner,'description',body->>'description',body->>'original_language');
- FOR field IN SELECT key FROM jsonb_each(body) WHERE key NOT IN ('evidence','territories','contacts','contact_links','conditions','organizations','place','addresses','languages','coverage') LOOP
+ FOR field IN SELECT key FROM jsonb_each(body) WHERE NOT EXISTS(SELECT FROM governance.revision_extensions e WHERE kind=ANY(e.entity_kinds) AND key=ANY(e.body_fields)) AND key NOT IN ('evidence','territories','contacts','contact_links','conditions','organizations','place','addresses','languages','coverage') LOOP
   decision:=governance.select_value(rev,owner,field,NULL,COALESCE(body->'evidence'->field,evidence),note);
  END LOOP;
  IF kind='service' THEN
@@ -176,7 +181,7 @@ BEGIN
   decision:=governance.select_value(rev,owner,'coordinates',NULL,COALESCE(body->'evidence'->'coordinates',evidence),note);
   INSERT INTO data.location_revisions(revision_id,entity_id,name_content_id,location_kind,latitude,longitude,coordinate_state,coordinate_decision_id,selected_geocoding_result_id,parent_location_id)
   VALUES(rev,owner,name_unit,body->>'location_kind',(body->>'latitude')::double precision,(body->>'longitude')::double precision,COALESCE(body->>'coordinate_state','unknown'),decision,(body->>'selected_geocoding_result_id')::uuid,(body->>'parent_location_id')::uuid);
- ELSE
+ ELSIF kind='territory' THEN
   IF NOT EXISTS(SELECT FROM pg_timezone_names WHERE name=body->>'timezone_name') THEN RAISE EXCEPTION USING ERRCODE='22023', MESSAGE='unknown_timezone'; END IF;
   INSERT INTO geo.territory_revisions(revision_id,entity_id,name_content_id,timezone_name,country_code,boundary) VALUES(rev,owner,name_unit,body->>'timezone_name',body->>'country_code',CASE WHEN body->>'boundary_wkt' IS NOT NULL THEN public.ST_Multi(public.ST_GeomFromText(body->>'boundary_wkt',4326)) END);
  END IF;
@@ -232,6 +237,7 @@ BEGIN
    INSERT INTO geo.service_memberships VALUES(rev,owner,(item#>>'{}')::uuid,'explicit editorial selection',decision);
   END LOOP;
  END IF;
+ PERFORM governance.apply_revision_extensions(rev,owner,kind,body,evidence,note);
  UPDATE governance.entity_revisions SET sealed_at=clock_timestamp() WHERE revision_id=rev;
  INSERT INTO governance.working_heads VALUES(owner,rev) ON CONFLICT(entity_id) DO UPDATE SET revision_id=EXCLUDED.revision_id;
  INSERT INTO governance.submissions(entity_id,proposed_revision_id,base_public_revision_id,actor_id) VALUES(owner,rev,expected_public,actor);
@@ -324,7 +330,7 @@ BEGIN
   INSERT INTO governance.value_evidence SELECT new_decision,assertion_id,evidence_role FROM governance.value_evidence WHERE value_decision_id=d.value_decision_id;
  END LOOP;
  INSERT INTO i18n.revision_content_links SELECT rev,entity_id,field_code,component_scope,content_id FROM i18n.revision_content_links WHERE revision_id=source_revision;
- FOREACH relation IN ARRAY ARRAY['governance.revision_territories','geo.territory_revisions','data.organization_revisions','data.location_revisions','data.service_revisions','data.service_places','data.service_organizations','data.location_organizations','data.contact_entries','data.service_contact_links','data.access_conditions','data.addresses','data.service_languages','geo.service_memberships','geo.service_coverage'] LOOP
+ FOREACH relation IN ARRAY ARRAY['governance.revision_territories','geo.territory_revisions','data.organization_revisions','data.location_revisions','data.service_revisions','data.service_places','data.service_organizations','data.location_organizations','data.contact_entries','data.service_contact_links','data.access_conditions','data.addresses','data.service_languages','geo.service_memberships','geo.service_coverage']||(SELECT COALESCE(array_agg(r ORDER BY e.code,n),ARRAY[]::text[]) FROM governance.revision_extensions e CROSS JOIN unnest(e.restore_tables) WITH ORDINALITY x(r,n)) LOOP
   SELECT string_agg(quote_ident(a.attname),',' ORDER BY a.attnum),string_agg(CASE WHEN a.attname='revision_id' THEN '$2' WHEN a.attname IN ('value_decision_id','coordinate_decision_id') THEN format('($3->>old.%I::text)::uuid',a.attname) ELSE 'old.'||quote_ident(a.attname) END,',' ORDER BY a.attnum) INTO columns,expression FROM pg_attribute a WHERE a.attrelid=relation::regclass AND a.attnum>0 AND NOT a.attisdropped AND a.attgenerated='';
   EXECUTE format('INSERT INTO %s (%s) SELECT %s FROM %s old WHERE old.revision_id=$1',relation,columns,expression,relation) USING source_revision,rev,decisions;
  END LOOP;
@@ -380,4 +386,31 @@ GRANT USAGE ON SCHEMA governance TO egi_writer;
 GRANT EXECUTE ON FUNCTION governance.save_revision(text,uuid,uuid,uuid,jsonb,text),governance.review_revision(uuid,uuid,text,text),governance.publish_revision(uuid,uuid,uuid),governance.restore_revision(uuid,uuid,uuid,text),governance.verify_revision(uuid,text,text,uuid,timestamptz,text,text,text) TO egi_writer;
 GRANT USAGE ON SCHEMA api TO egi_reader;
 GRANT SELECT ON ALL TABLES IN SCHEMA api TO egi_reader;
+
+-- ============================================================================
+-- Aggregate Extensions
+-- ============================================================================
+-- Administrator-owned integration registry; app writers cannot register SQL handlers.
+CREATE TABLE governance.revision_extensions (
+ code text PRIMARY KEY, entity_kinds text[] NOT NULL, body_fields text[] NOT NULL,
+ save_handler regprocedure NOT NULL, restore_tables text[] NOT NULL
+);
+CREATE FUNCTION governance.lock_operation() RETURNS void LANGUAGE plpgsql SET search_path=pg_catalog AS $$
+BEGIN
+ IF current_setting('transaction_isolation')<>'read committed' THEN RAISE EXCEPTION USING ERRCODE='22023',MESSAGE='write_requires_read_committed'; END IF;
+ PERFORM pg_advisory_xact_lock(1162303812,1);
+END $$;
+REVOKE ALL ON FUNCTION governance.lock_operation() FROM PUBLIC;
+CREATE FUNCTION governance.apply_revision_extensions(rev uuid,owner uuid,kind text,body jsonb,evidence jsonb,note text) RETURNS void
+LANGUAGE plpgsql SET search_path=pg_catalog AS $$
+DECLARE extension governance.revision_extensions; schema_name text; function_name text;
+BEGIN
+ FOR extension IN SELECT * FROM governance.revision_extensions WHERE kind=ANY(entity_kinds) ORDER BY code LOOP
+  SELECT n.nspname,p.proname INTO STRICT schema_name,function_name FROM pg_proc p JOIN pg_namespace n ON n.oid=p.pronamespace WHERE p.oid=extension.save_handler;
+  EXECUTE format('SELECT %I.%I($1,$2,$3,$4,$5,$6)',schema_name,function_name) USING rev,owner,kind,body,evidence,note;
+ END LOOP;
+END $$;
+REVOKE ALL ON governance.revision_extensions FROM PUBLIC;
+REVOKE ALL ON FUNCTION governance.apply_revision_extensions(uuid,uuid,text,jsonb,jsonb,text) FROM PUBLIC;
+
 COMMIT;

@@ -31,14 +31,16 @@ sh scripts/verify-disposable.sh
 
 For the contained installation, also export its `PERL5LIB` before this command.
 The script creates its own private temporary cluster, initializes it, disables TCP,
-creates `egi_contract`, deploys the published #1–#4 changes and verifies their
-contracts, upgrades through #9, runs structural verification and deterministic SQL
-contracts and two-connection concurrency, reverts/redeploys and repeats checks.
+creates `egi_contract`, deploys through `003_governance` and verifies the #1–#4
+contracts, adds `004_directory`, runs structural verification and deterministic SQL
+contracts and two-connection concurrency, reverts/redeploys and repeats both SQL
+and concurrency checks. The log identifies the generated cluster data directory,
+local socket port, absence of a TCP connection and exact runtime versions.
 Its trap stops and removes only the cluster it just created. Socket authentication
 is trust within the owner's private temporary directory; this is a test harness,
 not a production authentication configuration.
 
-The nine SQL contracts are transaction-local and roll back fixtures. The concurrency
+The ten behavioral SQL contracts and clean-data contract are transaction-local and roll back fixtures. The concurrency
 check intentionally commits synthetic setup to exercise independent connections;
 the enclosing lifecycle removes it with the disposable schema revert. Run that
 check only on a newly deployed `egi_contract` target. Neither lifecycle nor fixtures
@@ -77,6 +79,16 @@ Revision restoration is an editorial operation creating a new retained revision.
 Sqitch revert is structural recovery and can destroy tables. Use the disposable
 runner for lifecycle verification; production backup/recovery is a separate future
 policy. Published migrations should receive new dependency-ordered changes rather
-than edits to released history. The first four migrations were reviewed and delivered to dev at e03f2f9. The next
-group adds new changes and remains local for checkpoint review. Master integration
-is pending.
+than edits to released history. The historical checkpoint migrations were delivered to dev at e03f2f9 and 9d4013c.
+The initial baseline exception below supersedes their names before master integration.
+
+## Initial baseline changesets
+
+The user consolidated the first release into four numbered triplets: 001_foundation,
+002_canonical, 003_governance and 004_directory. Each is one atomic transaction.
+The staged lifecycle deploys through 003_governance, then adds 004_directory.
+This explicitly authorized initial rebaseline replaces the ten historical names;
+it does not provide an in-place upgrade of an old Sqitch registry. For any old
+disposable target, use the previous matching checkout to revert/remove it, then
+create a new empty target. Never rewrite a populated registry to pretend the new
+names were deployed. Subsequent released changes again use immutable new migrations.

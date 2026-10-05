@@ -9,8 +9,11 @@ distributions of the same canonical dataset.
 ## Current authorization
 
 The user authorized execution of the approved specification v1.1 and plan r0.2
-through issues #5–#9, using execute-reviewed-task and grouped stepwise review.
-The #1–#4 review was accepted and pushed to dev. Pause after #9; #10 requires continuation. Selected Sqitch setup,
+through issue #10, using execute-reviewed-task and grouped stepwise review.
+The #1–#9 reviews were accepted and pushed to dev; #10 passed integrated acceptance.
+The user authorized final dev push, independent review, PR to master and closure
+of all ten issues after acceptance verification. Initial changeset consolidation
+into four numbered triplets is explicitly authorized; preserve Git history. Selected Sqitch setup,
 SQL/DDL and synthetic checks on a dedicated disposable PostgreSQL 18.3/PostGIS
 target are within this execution scope. Preserve original app/source references.
 
@@ -47,7 +50,7 @@ questions in the design; use ordinary chat questions for this interview so the u
 can answer every round. Confirm shared understanding before treating the design as
 review-ready. GitHub is the selected tracker; the user-created repository is configured as origin.
 The approved `to-tickets` breakdown is published as issues #1–#10; read the action
-plan’s task mapping before execution. Execution mode is grouped stepwise, with the next checkpoint after issue #9. Before specification/task planning read
+plan’s task mapping before execution. Execution mode is grouped stepwise, with the next checkpoint after issue #10. Before specification/task planning read
 [specification](docs/design/specification.md), [action plan](docs/design/implementation-plan.md)
 and [tracker conventions](docs/agents/issue-tracker.md). Specification/plan approval
 state is recorded there; do not infer implementation scope from document creation.

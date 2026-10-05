@@ -59,3 +59,10 @@ The #1–#4 review was accepted and pushed to dev at e03f2f9. The user authorize
 #5–#9 in the same grouped stepwise mode, on task/egi-database-05-09 from that base.
 Pause after #9 for review and delivery authorization, before #10/master integration.
 Use the current action-plan record; earlier phase records above are historical.
+
+## Final integrated acceptance continuation
+
+The user accepted #5–#9 and explicitly authorized push to dev plus #10 execution.
+The reviewed group is delivered at 9d4013c; #10 uses task/egi-database-10 from that
+fetched base. Pause at final review. Use the current plan for evidence/delivery;
+master integration and production operations retain separate authorization.

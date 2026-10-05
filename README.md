@@ -4,10 +4,11 @@ PostgreSQL/PostGIS is EGI's authoritative database. Sqitch manages structure;
 real-data population will use a separate bootstrap. Future SQLite files are
 read-only offline distributions of approved canonical information.
 
-The first implementation checkpoint (#1–#4) includes typed identity/revisions,
-retained source evidence, canonical drafts, controlled publication, scoped
-verification and new-revision restoration. It was reviewed and pushed to dev at e03f2f9;
-no real source data, application or exporter is delivered.
+The initial implementation includes typed identity/revisions, retained source
+evidence, canonical drafts, controlled publication, scoped verification, restoration
+and approved public directory reads. No real source data, application or exporter
+is delivered. The baseline uses four numbered Sqitch triplets: `001_foundation`,
+`002_canonical`, `003_governance` and `004_directory`.
 
 ## Start here
 
@@ -33,4 +34,6 @@ external delivery are recorded separately in the action plan.
 The #5–#9 checkpoint adds relational hours and approved calendar effects, territorial
 taxonomy, dynamic translations and public directory reads. Read the
 [directory operations](docs/implementation/directory.md) for the implemented contract.
-It pauses for review before delivery and ticket #10 integrated acceptance.
+The group was reviewed and pushed to dev at 9d4013c. Ticket #10 supplies final
+[integrated acceptance](docs/implementation/acceptance.md). The user authorized final
+dev delivery, independent review, a PR to master and issue closure after verification.
