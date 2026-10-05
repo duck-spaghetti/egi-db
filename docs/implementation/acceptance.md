@@ -6,8 +6,10 @@ Specification v1.1, action plan r0.2 and GitHub issue #10 require integrated nat
 PostgreSQL/PostGIS/Sqitch acceptance, not an exporter or application rollout.
 The user reviewed issues #1–#9 and authorized their dev delivery plus #10 execution.
 The actual fetched base is 9d4013c6d1f53a134ace042ff3d9be95d101d137; isolated
-branch task/egi-database-10 retains the final tests/documentation as a local diff.
-Review is self-review; no independent reviewer was requested. Pause at final review.
+branch task/egi-database-10 retains the final implementation. The user approved
+final delivery and requested independent review, a PR to master and issue closure.
+The historical result below records the earlier self-review; the independent
+[release review](review.md) and remediation supersede that checkpoint state.
 
 Run `scripts/verify-disposable.sh` with the selected Sqitch/Perl runtime as described
 in [setup](setup.md). It creates a unique private cluster under /private/tmp,
@@ -15,8 +17,8 @@ disables TCP, selects only its own Unix socket and runs psql with ON_ERROR_STOP.
 The log identifies actual data directory, target egi_contract, port and versions.
 No existing server, source-populated database or original source/app is used.
 
-The lifecycle first deploys the published #1–#4 changes and runs their contracts,
-then upgrades through #9. It performs Sqitch verify, clean-data checks and ten
+The lifecycle first deploys through 003_governance and runs #1–#4 contracts,
+then adds 004_directory. It performs Sqitch verify, clean-data checks and ten
 transaction-local behavioral SQL fixtures. Two real connections exercise the
 mutation lock and stale-base SQLSTATE. Full revert/redeploy is followed by another
 structural/clean-data/behavioral check pass and another two-connection test.
@@ -107,3 +109,14 @@ ten-change evidence above is retained; current final verification uses atomic
 001_foundation, 002_canonical, 003_governance and 004_directory and repeats all
 behavioral/clean-data/concurrency checks. It is a fresh initial baseline, not an
 old-registry upgrade. No live target or Git history is rewritten.
+
+## Post-review final verification
+
+The complete runner exited 0 again on 2026-10-05 after all three independent-review
+findings were corrected. Target: egi_contract, /private/tmp/egi-contract.M3wzaF/data,
+private socket port 65432, no TCP; PostgreSQL 18.3, PostGIS 3.6.0, Sqitch 1.6.1.
+Both complete deployment cycles passed structural verification, clean-data checks,
+ten behavioral contracts and real concurrency. New assertions cover previous-day
+closing/countdown, taxonomy adoption sequence with no services, verification lock
+contention (55P03) and rejection of REPEATABLE READ (22023).
+The runner removed its cluster. Evidence: work/execution/review-remediation.log.

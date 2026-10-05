@@ -18,7 +18,7 @@ CREATE TABLE governance.contract_concurrency_fixture AS SELECT :'entity'::uuid A
 COMMIT;
 SQL
 EGI_TMP=$(mktemp -d /private/tmp/egi-concurrency.XXXXXX)
-trap 'rm -f "$EGI_TMP/first" "$EGI_TMP/second"; rmdir "$EGI_TMP"' EXIT
+trap 'rm -f "$EGI_TMP/first" "$EGI_TMP/second" "$EGI_TMP/verification"; rmdir "$EGI_TMP"' EXIT
 # First transaction holds the EGI mutation lock while the second approaches the same base.
 "$PSQL" -X -v ON_ERROR_STOP=1 >"$EGI_TMP/first" 2>&1 <<'SQL' &
 BEGIN;
@@ -35,6 +35,14 @@ while [ "$("$PSQL" -X -At -c "SELECT count(*) FROM pg_locks WHERE locktype='advi
   if [ "$EGI_ATTEMPTS" -gt 50 ]; then echo 'Mutation lock not observed' >&2; exit 1; fi
   sleep 0.1
 done
+# Verification must wait behind the same lock before reading authorization scope.
+if "$PSQL" -X -v ON_ERROR_STOP=1 >"$EGI_TMP/verification" 2>&1 <<'SQL'
+\set VERBOSITY verbose
+SET lock_timeout='100ms';
+SELECT governance.verify_revision(base,'page',NULL,NULL,'2025-01-01Z','phone','fixture:concurrent-verification','confirmed') FROM governance.contract_concurrency_fixture;
+SQL
+then echo 'Verification bypassed mutation lock' >&2; exit 1; fi
+if ! rg -q '55P03: canceling statement due to lock timeout' "$EGI_TMP/verification"; then cat "$EGI_TMP/verification"; exit 1; fi
 if "$PSQL" -X -v ON_ERROR_STOP=1 >"$EGI_TMP/second" 2>&1 <<'SQL'
 \set VERBOSITY verbose
 SELECT governance.save_revision('service',entity,base,NULL,'{"name":"Stale concurrent update","delivery_mode":"telephone"}','Concurrent fixture B') FROM governance.contract_concurrency_fixture;
@@ -50,4 +58,10 @@ END $$;
 DROP TABLE governance.contract_concurrency_fixture;
 ROLLBACK;
 SQL
-printf '%s\n' 'Concurrent stale-base update rejected with 40001; exactly one new revision retained.'
+"$PSQL" -X -v ON_ERROR_STOP=1 <<'SQL'
+BEGIN ISOLATION LEVEL REPEATABLE READ;
+\ir tests/contract/helpers.sql
+SELECT pg_temp.expect_error('SELECT governance.verify_revision(NULL,''page'',NULL,NULL,''2025-01-01Z'',''phone'',''fixture:isolation'',''confirmed'')','22023','write_requires_read_committed');
+ROLLBACK;
+SQL
+printf '%s\n' 'Concurrent stale-base update rejected with 40001; exactly one new revision retained. Verification honors mutation lock and rejects obsolete snapshot isolation.'

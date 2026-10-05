@@ -15,11 +15,11 @@ Preserve the authoritative English vocabulary in [GLOSSARY.md](../../GLOSSARY.md
 Record domain terms as they are settled. Use ADRs for consequential trade-offs;
 proposed choices remain labelled in the design until selected.
 
-## Selected tools, not configured checks
+## Selected tools and checks
 
-Sqitch is selected to manage future structural changes. Deployment, revert and
-verification scripts, project configuration, targets and runtime versions have
-not been created. A data bootstrap is separate from schema deployment; live source
+Sqitch manages structural changes through numbered atomic deploy/revert/verify
+triplets. The selected native runtime and executable contract runner are documented
+in docs/implementation/setup.md. A data bootstrap is separate from schema deployment; live source
 content and detailed taxonomy are not automatically embedded in migrations.
 
 Future SQL will use explicit schema qualification and approved integrity contracts.
@@ -29,8 +29,8 @@ canonical changes must have traceable decisions and supporting assertions.
 
 ## Verification planning
 
-The design contains acceptance scenarios rather than executable tests. Future
-Sqitch verify scripts should establish deployed structure and constraints without
+The design scenarios are mapped to executable contracts in the acceptance matrix.
+Sqitch verify scripts establish deployed structure and constraints without
 depending on mutable production service data. Separate fixtures should exercise
 provenance conflicts, repeated imports, cardinalities, geometry, hours and export
 selection. A successful schema deploy alone does not verify those behaviors.
@@ -39,7 +39,8 @@ HSDS serialization must eventually be checked against the selected pinned JSON
 schemas. SQLite exports need referential integrity, consistent identifiers,
 publication filtering, coordinate consistency and consumer-version checks.
 Spatial query tests require PostgreSQL/PostGIS when those operations are in scope.
-No test runner, CI, linter or typing checker is selected by this documentation task.
+The selected runner uses native psql/Sqitch and synthetic SQL fixtures. No CI,
+Python test runner, linter or typing checker is introduced.
 
 ## First implementation checkpoint
 
@@ -48,7 +49,7 @@ contract fixtures. Read the setup/operations guides under docs/implementation fo
 the actual commands and controlled-write contract. Synthetic fixtures remain
 separate from real-data bootstrap. Future migrations extend owned-aggregate restore
 and its checks when they add versioned child tables. Preserve immutable released
-migrations; the current initial set remains under checkpoint review.
+migrations after the explicitly authorized four-change initial rebaseline.
 
 If the shared parent guides are absent in a standalone clone/worktree, use the
 [worktree baseline](worktree-baseline.md) and the database-specific execution record.

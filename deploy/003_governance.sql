@@ -344,6 +344,7 @@ CREATE FUNCTION governance.verify_revision(target uuid, scope text, field text, 
 LANGUAGE plpgsql SECURITY DEFINER SET search_path=pg_catalog AS $$
 DECLARE owner uuid; scopes uuid[]; verification uuid;
 BEGIN
+ PERFORM governance.lock_operation();
  SELECT entity_id INTO STRICT owner FROM governance.entity_revisions WHERE revision_id=target AND sealed_at IS NOT NULL;
  SELECT array_agg(t) INTO scopes FROM governance.affected_territories(owner,target) t;
  PERFORM governance.require_capability('verify',scopes);

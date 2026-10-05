@@ -11,6 +11,8 @@ DO $$ DECLARE rev uuid; owner uuid; newrev uuid; restored uuid; body jsonb; days
  PERFORM governance.verify_revision(rev,'component',NULL,newrev,'2025-01-01Z','phone','fixture:interval-check','confirmed');
  PERFORM pg_temp.assert_true(EXISTS(SELECT FROM governance.verifications WHERE revision_id=rev AND component_id=newrev),'single interval can be verified');
  PERFORM pg_temp.assert_true(api.weekly_opening(owner,'2026-01-06 00:00Z')->>'status'='open','previous-day spillover');
+ result:=api.weekly_opening(owner,'2026-01-06 00:00Z');
+ PERFORM pg_temp.assert_true((result->>'closes_at')::timestamptz='2026-01-06 01:00Z' AND (result->>'seconds_until_close')::numeric=3600,'previous-day spillover closes in one elapsed hour');
  PERFORM pg_temp.assert_true(api.weekly_opening(owner,'2026-01-06 01:00Z')->>'status'='closed','half-open endpoint');
  result:=api.weekly_opening(owner,'2026-01-06 10:00Z');
  PERFORM pg_temp.assert_true((result->>'closes_at')::timestamptz='2026-01-06 16:00Z' AND (result->>'seconds_until_close')::numeric=21600,'adjacent intervals merge for countdown');

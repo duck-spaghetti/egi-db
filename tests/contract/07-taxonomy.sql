@@ -1,7 +1,7 @@
 BEGIN;
 \ir helpers.sql
 \ir fixtures.sql
-DO $$ DECLARE rome uuid; florence uuid; vr uuid; vocab uuid; axis uuid; axis2 uuid; t uuid; parent1 uuid; parent2 uuid; leaf uuid; other uuid; members jsonb:='[]'; edges jsonb; release uuid; adoption uuid; ar uuid; sr uuid; service uuid; fork_vr uuid; fork_v uuid; fork_axis uuid; fork_term uuid; fork_release uuid; BEGIN
+DO $$ DECLARE before_sequence bigint; rome uuid; florence uuid; vr uuid; vocab uuid; axis uuid; axis2 uuid; t uuid; parent1 uuid; parent2 uuid; leaf uuid; other uuid; members jsonb:='[]'; edges jsonb; release uuid; adoption uuid; ar uuid; sr uuid; service uuid; fork_vr uuid; fork_v uuid; fork_axis uuid; fork_term uuid; fork_release uuid; BEGIN
  rome:=pg_temp.save('territory','{"code":"rome","name":"Rome","timezone_name":"Europe/Rome"}');PERFORM pg_temp.publish(rome); SELECT entity_id INTO rome FROM governance.entity_revisions WHERE revision_id=rome;
  florence:=pg_temp.save('territory','{"code":"florence","name":"Florence","timezone_name":"Europe/Rome"}');PERFORM pg_temp.publish(florence);SELECT entity_id INTO florence FROM governance.entity_revisions WHERE revision_id=florence;
  vr:=pg_temp.save('taxonomy_vocabulary','{"code":"shared","name":"Shared vocabulary"}');PERFORM pg_temp.publish(vr); SELECT entity_id INTO vocab FROM governance.entity_revisions WHERE revision_id=vr;
@@ -15,7 +15,10 @@ DO $$ DECLARE rome uuid; florence uuid; vr uuid; vocab uuid; axis uuid; axis2 uu
  PERFORM pg_temp.expect_error(format('SELECT governance.freeze_taxonomy_release(%L,%L,%L,%L,%L,%L)',vr,'cross-axis',jsonb_build_array(jsonb_build_object('axis_id',axis,'label','Need'),jsonb_build_object('axis_id',axis2,'label','Population')),members,jsonb_build_array(jsonb_build_object('child',leaf,'parent',other)),'Reject cross-axis hierarchy'),'23503');
  release:=governance.freeze_taxonomy_release(vr,'v1',jsonb_build_array(jsonb_build_object('axis_id',axis,'label','Need'),jsonb_build_object('axis_id',axis2,'label','Population')),members,edges,'Freeze reviewed exact heads');
  PERFORM pg_temp.expect_error(format('INSERT INTO taxonomy.broader_links VALUES(%L,%L,%L,%L)',release,axis,parent2,parent1),'55000','sealed_taxonomy_release');
+ SELECT max(change_sequence) INTO before_sequence FROM audit.public_changes;
  adoption:=governance.adopt_taxonomy_release(rome,release,'2026-01-01',NULL,'Rome adopts v1');
+ PERFORM pg_temp.assert_true((SELECT max(change_sequence)>before_sequence FROM audit.public_changes),'adoption advances public sequence in territory without services');
+ PERFORM pg_temp.assert_true(EXISTS(SELECT FROM audit.public_changes WHERE entity_id=vocab AND reason='approved_taxonomy_adoption'),'adopted metadata change retains publication lineage');
  PERFORM pg_temp.expect_error(format('SELECT governance.adopt_taxonomy_release(%L,%L,%L,NULL,%L)',rome,release,'2026-02-01','overlap'),'23514','overlapping_taxonomy_adoption');
  sr:=pg_temp.save('service',jsonb_build_object('name','Classified service','description','Test classification','delivery_mode','telephone','contacts','[{"channel_type":"phone","value":"phone"}]'::jsonb,'territories',jsonb_build_array(rome),'classifications',jsonb_build_array(jsonb_build_object('adoption_id',adoption,'term_id',leaf),jsonb_build_object('adoption_id',adoption,'term_id',other))));PERFORM pg_temp.publish(sr);SELECT entity_id INTO service FROM governance.entity_revisions WHERE revision_id=sr;
  PERFORM pg_temp.assert_true((SELECT count(*)=1 FROM api.taxonomy_search(rome,jsonb_build_object('need',jsonb_build_array(parent1,parent2)),'2026-03-01')),'multiple parents deduplicate service');

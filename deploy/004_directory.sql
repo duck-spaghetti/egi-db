@@ -149,7 +149,7 @@ BEGIN
  state:=governance.weekly_state(rev,scope,contact,instant);
  FOR boundary IN
  WITH schedules AS (SELECT * FROM data.schedules WHERE revision_id=rev AND scope_code=scope AND contact_component_id IS NOT DISTINCT FROM contact),
- civil_dates AS (SELECT s.*,d::date AS day FROM schedules s CROSS JOIN LATERAL generate_series((instant AT TIME ZONE s.timezone_name)::date::timestamp,((instant AT TIME ZONE s.timezone_name)::date+9)::timestamp,interval '1 day') d),
+ civil_dates AS (SELECT s.*,d::date AS day FROM schedules s CROSS JOIN LATERAL generate_series(((instant AT TIME ZONE s.timezone_name)::date-1)::timestamp,((instant AT TIME ZONE s.timezone_name)::date+9)::timestamp,interval '1 day') d),
  civil_bounds AS (
  SELECT timezone_name,day::timestamp AS civil FROM civil_dates
  UNION SELECT d.timezone_name,d.day+i.opens_at FROM civil_dates d JOIN data.schedule_intervals i ON i.revision_id=rev AND i.schedule_id=d.component_id AND i.iso_weekday=extract(isodow FROM d.day)
@@ -494,6 +494,15 @@ DECLARE result uuid; vocabulary uuid; BEGIN
  SELECT vocabulary_id INTO STRICT vocabulary FROM taxonomy.releases WHERE release_id=release AND sealed_at IS NOT NULL;
  IF EXISTS(SELECT FROM taxonomy.assignments a JOIN governance.published_heads h USING(revision_id) JOIN taxonomy.territory_adoptions old ON old.adoption_id=a.adoption_id WHERE a.territory_id=territory AND old.vocabulary_id=vocabulary AND NOT EXISTS(SELECT FROM taxonomy.release_terms t WHERE t.release_id=release AND t.term_id=a.term_id)) THEN RAISE EXCEPTION USING ERRCODE='23514',MESSAGE='taxonomy_assignment_migration_required'; END IF;
  INSERT INTO taxonomy.territory_adoptions(territory_id,vocabulary_id,release_id,effective_from,effective_until,actor_id,reason) VALUES(territory,vocabulary,release,date_from,date_until,governance.current_actor(),note) RETURNING adoption_id INTO result;
+ -- Advance global metadata sequence even when the territory has no services.
+ INSERT INTO audit.public_changes(entity_id,publication_id,resource_kind,reason)
+ SELECT vocabulary,p.publication_id,'territorial_taxonomy','approved_taxonomy_adoption'
+ FROM taxonomy.releases r JOIN governance.publications p ON p.revision_id=r.vocabulary_revision_id
+ WHERE r.release_id=release ORDER BY p.published_at DESC,p.publication_id LIMIT 1;
+ INSERT INTO audit.public_changes(entity_id,publication_id,resource_kind,reason)
+ SELECT h.entity_id,h.publication_id,'service','approved_taxonomy_adoption'
+ FROM governance.published_heads h JOIN geo.service_memberships m USING(revision_id)
+ WHERE m.territory_id=territory;
  INSERT INTO audit.events(actor_id,action,entity_id,details) VALUES(governance.current_actor(),'approve_taxonomy_adoption',territory,jsonb_build_object('adoption_id',result,'release_id',release,'reason',note)); RETURN result;
 END $$;
 CREATE FUNCTION governance.fork_taxonomy_release(source_release uuid,target_territory uuid,new_code text,new_version text,note text) RETURNS uuid
