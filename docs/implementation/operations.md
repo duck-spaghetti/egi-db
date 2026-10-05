@@ -75,14 +75,15 @@ new saved revision, copying its owned typed payload, original bindings, componen
 territorial declarations and evidence choices. It records restore origin and actor,
 retains intervening history and needs fresh review/publication. Shared identities
 remain linked to independently approved current heads. Verification is not copied
-as a fresh check. The current restore inventory covers the #1–#4 tables; later hours,
-calendar, taxonomy and translation work must extend it and its regression checks.
+as a fresh check. The first-group inventory is extended by the #5–#9 registry for hours, calendars
+and pinned classifications. Read [directory operations](directory.md). Translations
+remain attached to original units; unchanged/restored units reuse applicable history.
 
 `verify_revision(revision, scope, field, component, checked_at, method, evidence, outcome)`
 records one page, field or component check on a saved revision. A component/field must
 exist in that revision. Checking a phone leaves hours unverified. Future-dated checks
-fail. Historical verification is retained; numerical aging thresholds and the richer
-public reconfirmation warning remain later projection/policy work.
+fail. Historical verification is retained. Public projections expose missing/old checks;
+numerical aging thresholds remain unselected caller policy.
 
 ## Errors and boundaries
 
@@ -93,5 +94,6 @@ isolation use 22023. FK/unique errors identify their actual constraint.
 
 Do not retry a stale-base mutation blindly: reload the approved/draft state and review
 the conflict. A failed transaction leaves heads, audit and public sequence unchanged.
-No automatic merge engine, live source loader, schedules/calendar, taxonomy/translation
-workflow, HTTP endpoint, exporter or SQLite file is delivered by this checkpoint.
+The first group is delivered to dev; hours/calendar, taxonomy/translation and public
+reads are implemented in the subsequent local checkpoint. No automatic merge engine,
+live source loader, HTTP endpoint, exporter or SQLite file is delivered.

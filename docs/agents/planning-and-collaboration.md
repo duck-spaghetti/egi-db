@@ -52,3 +52,10 @@ current bootstrap push is specifically authorized. Do not advance past checkpoin
 
 If the shared parent guides are absent in a standalone clone/worktree, use the
 [worktree baseline](worktree-baseline.md) and the database-specific execution record.
+
+## Current group continuation
+
+The #1–#4 review was accepted and pushed to dev at e03f2f9. The user authorized
+#5–#9 in the same grouped stepwise mode, on task/egi-database-05-09 from that base.
+Pause after #9 for review and delivery authorization, before #10/master integration.
+Use the current action-plan record; earlier phase records above are historical.

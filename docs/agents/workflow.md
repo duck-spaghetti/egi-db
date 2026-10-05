@@ -31,7 +31,7 @@ phases are not approved tickets or an execution plan.
 ## Active execution agreement
 
 The user authorized execute-reviewed-task in grouped stepwise mode: #1–#4,
-#5–#9, then #10. Current checkpoint is #1–#4. The development base is dev; master
+#5–#9, then #10. The first checkpoint was reviewed and pushed to dev; current checkpoint is #5–#9. The development base is dev; master
 is the completed integration target. Use the action plan’s execution record for
 actual branch/worktree, acceptance evidence and delivery state. Earlier design-only
 notes describe the initialization phase, not current authorization.

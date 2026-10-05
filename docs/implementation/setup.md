@@ -2,7 +2,7 @@
 
 ## Selected runtime
 
-The first execution group uses native PostgreSQL 18.3, PostGIS 3.6.0, Sqitch 1.6.1
+The execution groups use native PostgreSQL 18.3, PostGIS 3.6.0, Sqitch 1.6.1
 and DBD::Pg 3.21.2. PostgreSQL binaries are explicitly selected from
 `/Library/PostgreSQL/18/bin`; Anaconda's PostgreSQL 12 tools are not the target.
 The native Perl driver was built against Homebrew libpq 18.6. Driver/client version
@@ -31,13 +31,14 @@ sh scripts/verify-disposable.sh
 
 For the contained installation, also export its `PERL5LIB` before this command.
 The script creates its own private temporary cluster, initializes it, disables TCP,
-creates `egi_contract`, deploys/verifies the structure, runs deterministic SQL
+creates `egi_contract`, deploys the published #1–#4 changes and verifies their
+contracts, upgrades through #9, runs structural verification and deterministic SQL
 contracts and two-connection concurrency, reverts/redeploys and repeats checks.
 Its trap stops and removes only the cluster it just created. Socket authentication
 is trust within the owner's private temporary directory; this is a test harness,
 not a production authentication configuration.
 
-The four SQL contracts are transaction-local and roll back fixtures. The concurrency
+The nine SQL contracts are transaction-local and roll back fixtures. The concurrency
 check intentionally commits synthetic setup to exercise independent connections;
 the enclosing lifecycle removes it with the disposable schema revert. Run that
 check only on a newly deployed `egi_contract` target. Neither lifecycle nor fixtures
@@ -76,5 +77,6 @@ Revision restoration is an editorial operation creating a new retained revision.
 Sqitch revert is structural recovery and can destroy tables. Use the disposable
 runner for lifecycle verification; production backup/recovery is a separate future
 policy. Published migrations should receive new dependency-ordered changes rather
-than edits to released history. The initial migrations are still under checkpoint
-review and have not been delivered as product migrations to dev/master.
+than edits to released history. The first four migrations were reviewed and delivered to dev at e03f2f9. The next
+group adds new changes and remains local for checkpoint review. Master integration
+is pending.

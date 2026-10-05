@@ -1,0 +1,41 @@
+BEGIN;
+\ir helpers.sql
+\ir fixtures.sql
+SELECT governance.register_language('it','Italiano','Italian','ltr','Synthetic registry');
+SELECT governance.register_language('ar','العربية','Arabic','rtl','Synthetic registry');
+SELECT governance.register_language('en','English','English','ltr','Synthetic registry');
+SELECT governance.register_language('es','Español','Spanish','ltr','Synthetic registry');
+DO $$ DECLARE rev uuid; owner uuid; name_content uuid; description_content uuid; new_desc uuid; translation uuid; review uuid; pub uuid; changed uuid; third uuid; territory uuid; old_translation uuid; result jsonb; BEGIN
+ territory:=pg_temp.save('territory','{"code":"translation-area","name":"Area","timezone_name":"Europe/Rome"}');PERFORM pg_temp.publish(territory);SELECT entity_id INTO territory FROM governance.entity_revisions WHERE revision_id=territory;
+ PERFORM governance.prioritize_language(territory,'ar',1,true,'Territory translation priority');
+ rev:=pg_temp.save('service',jsonb_build_object('name','Nome originale','description','Descrizione originale','original_language','it','delivery_mode','telephone','contacts','[{"channel_type":"phone","value":"phone"}]'::jsonb,'territories',jsonb_build_array(territory)));SELECT entity_id INTO owner FROM governance.entity_revisions WHERE revision_id=rev;PERFORM pg_temp.publish(rev);
+ SELECT name_content_id,description_content_id INTO name_content,description_content FROM data.service_revisions WHERE revision_id=rev;
+ PERFORM pg_temp.assert_true((SELECT count(*)>=2 FROM governance.translation_worklist(territory)),'authorized scoped worklist');
+ PERFORM pg_temp.assert_true((SELECT count(*)=2 FROM governance.translation_work WHERE entity_id=owner AND language_code='ar' AND status='open'),'targeted partial translation work');
+ translation:=governance.propose_translation(name_content,'ar','اسم','human',NULL,NULL,'Human name');review:=governance.review_translation(translation,'approved','Approve exact candidate');pub:=governance.publish_translation(translation,review,NULL,'Publish name');
+ result:=api.resolve_text(name_content,'ar');PERFORM pg_temp.assert_true(result->>'direction'='rtl' AND result->>'translation_class'='human','language direction metadata');
+ PERFORM pg_temp.assert_true(api.resolve_text(description_content,'ar')->>'text'='Descrizione originale','partial description fallback');
+ translation:=governance.propose_translation(description_content,'ar','وصف','ai','synthetic-model',NULL,'AI description');review:=governance.review_translation(translation,'approved','Editorial approval');pub:=governance.publish_translation(translation,review,NULL,'Publish AI');old_translation:=translation;
+ PERFORM pg_temp.assert_true(api.resolve_text(description_content,'ar')->>'translation_class'='ai','editorial approval does not imply linguistic verification');
+ changed:=pg_temp.save('service',jsonb_build_object('name','Nome originale','description','Descrizione aggiornata','original_language','it','delivery_mode','telephone','contacts','[{"channel_type":"phone","value":"phone"}]'::jsonb,'territories',jsonb_build_array(territory)),owner,rev,rev);
+ PERFORM pg_temp.assert_true(api.resolve_text(description_content,'ar')->>'text'='وصف','draft original does not invalidate translation');PERFORM pg_temp.publish(changed,rev);
+ SELECT description_content_id INTO new_desc FROM data.service_revisions WHERE revision_id=changed;
+ PERFORM pg_temp.assert_true((SELECT name_content_id=name_content FROM data.service_revisions WHERE revision_id=changed),'unchanged original reused');
+ PERFORM pg_temp.assert_true(api.resolve_text(name_content,'ar')->>'text'='اسم','name translation retained');
+ PERFORM pg_temp.assert_true(api.resolve_text(new_desc,'ar')->>'text'='Descrizione aggiornata','changed description falls back');
+ PERFORM pg_temp.assert_true(api.resolve_text(description_content,'ar') IS NULL,'historical original not publicly resolved');
+ PERFORM pg_temp.assert_true(EXISTS(SELECT FROM governance.translation_work WHERE entity_id=owner AND required_content_id=new_desc AND status='open'),'changed original signals work');
+ PERFORM pg_temp.expect_error(format('SELECT governance.publish_translation(%L,%L,%L,%L)',old_translation,review,pub,'Stale original'),'23514','original_not_current');
+ translation:=governance.propose_translation(new_desc,'ar','وصف جديد','ai','synthetic-model',NULL,'Current description');
+ PERFORM pg_temp.assert_true(EXISTS(SELECT FROM governance.translation_work WHERE required_content_id=new_desc AND status='open'),'generation alone does not clear work');
+ review:=governance.review_translation(translation,'approved','Approve');pub:=governance.publish_translation(translation,review,NULL,'Publish');
+ PERFORM pg_temp.assert_true(EXISTS(SELECT FROM governance.translation_work WHERE required_content_id=new_desc AND status='resolved'),'exact published translation clears work');
+ PERFORM pg_temp.expect_error(format('SELECT governance.propose_translation(%L,%L,%L,%L,%L,NULL,%L)',new_desc,'ar','verified','ai_verified','synthetic-model','Missing origin'),'23514','verified_ai_requires_origin');
+ translation:=governance.propose_translation(new_desc,'ar','وصف جديد','ai_verified','synthetic-model',translation,'Explicit linguistic check');review:=governance.review_translation(translation,'approved','Approve verified candidate');PERFORM governance.publish_translation(translation,review,pub,'Publish verified');
+ PERFORM pg_temp.assert_true(api.resolve_text(new_desc,'ar')->>'translation_class'='ai_verified','explicit verification classification');
+ third:=pg_temp.save('service',jsonb_build_object('name','Nome originale','description','Terza descrizione','original_language','it','delivery_mode','telephone','contacts','[{"channel_type":"phone","value":"phone"}]'::jsonb,'territories',jsonb_build_array(territory)),owner,changed,changed);PERFORM pg_temp.publish(third,changed);
+ PERFORM pg_temp.assert_true(EXISTS(SELECT FROM governance.translation_work WHERE required_content_id=new_desc AND status='superseded'),'older completion cannot clear newer work');
+ PERFORM pg_temp.assert_true((SELECT count(*)=1 FROM governance.translation_work WHERE entity_id=owner AND field_code='description' AND status='open'),'exact current requirement only');
+ PERFORM pg_temp.assert_true(api.resolve_text(name_content,'es')->>'text'='Nome originale','unprioritized UI language still gets original fallback');
+END $$;
+ROLLBACK;

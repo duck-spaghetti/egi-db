@@ -6,3 +6,9 @@ foundation 2026-10-05T12:00:00Z Marco <marco@egi.invalid> # Typed identity, immu
 evidence [foundation] 2026-10-05T12:01:00Z Marco <marco@egi.invalid> # Immutable source observations and accountable selections
 canonical [evidence] 2026-10-05T12:02:00Z Marco <marco@egi.invalid> # Typed drafts, role-bearing relationships and territorial geography
 publication [canonical] 2026-10-05T12:03:00Z Marco <marco@egi.invalid> # Controlled publication, scoped verification and new-revision restoration
+aggregate_extensions [publication] 2026-10-05T14:00:00Z EGI <agent@egi.invalid> # Extend owned aggregates before sealing and on restoration
+weekly_hours [aggregate_extensions] 2026-10-05T14:01:00Z EGI <agent@egi.invalid> # Revision-owned hours and local-clock opening transitions
+shared_calendar [weekly_hours] 2026-10-05T14:02:00Z EGI <agent@egi.invalid> # Approved shared advisories and typed date effects
+territorial_taxonomy [shared_calendar] 2026-10-05T14:03:00Z EGI <agent@egi.invalid> # Frozen territorial vocabularies and descendant filtering
+dynamic_translations [territorial_taxonomy] 2026-10-05T14:04:00Z EGI <agent@egi.invalid> # Approved partial dynamic translations and current original work queue
+public_directory [dynamic_translations] 2026-10-05T14:05:00Z EGI <agent@egi.invalid> # Coherent approved public directory and export lineage

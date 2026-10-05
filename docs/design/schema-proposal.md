@@ -586,3 +586,13 @@ proposal, ready for discussion and technical review, not an approved implementat
 specification.** No SQL/DDL, Sqitch initialization, imports, bootstrap or generated
 SQLite database are included. The next step is review of this artifact, then a refined
 specification and an implementation plan only after explicit authorization.
+
+## Implementation clarification, checkpoint #5–#9
+
+On 2026-10-05 the user selected local-clock DST semantics instead of the earlier
+conservative proposal: repeated intervals apply both times, nonexistent intervals
+do not occur, continuous civil spans remain open and countdowns use real elapsed
+time. See [implemented directory contract](../implementation/directory.md) for
+actual identifiers, write surfaces, finite transition horizon and export boundaries.
+The proposal remains a design baseline; the new Sqitch changes are the executable
+structure and the action plan records acceptance and delivery state.

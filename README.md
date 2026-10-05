@@ -6,7 +6,7 @@ read-only offline distributions of approved canonical information.
 
 The first implementation checkpoint (#1–#4) includes typed identity/revisions,
 retained source evidence, canonical drafts, controlled publication, scoped
-verification and new-revision restoration. It is under grouped stepwise review;
+verification and new-revision restoration. It was reviewed and pushed to dev at e03f2f9;
 no real source data, application or exporter is delivered.
 
 ## Start here
@@ -30,6 +30,7 @@ into master. The initial remote main commit is preserved. Implementation happens
 on isolated task branches/worktrees from fetched dev; checkpoint approval and
 external delivery are recorded separately in the action plan.
 
-The first checkpoint pauses after #4. Weekly hours/calendar, territorial taxonomy,
-dynamic translations and the full public projection follow in #5–#9 after continuation.
-The integrated whole-set acceptance ticket #10 follows that group.
+The #5–#9 checkpoint adds relational hours and approved calendar effects, territorial
+taxonomy, dynamic translations and public directory reads. Read the
+[directory operations](docs/implementation/directory.md) for the implemented contract.
+It pauses for review before delivery and ticket #10 integrated acceptance.

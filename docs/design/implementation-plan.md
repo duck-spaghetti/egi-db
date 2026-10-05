@@ -464,8 +464,9 @@ current bootstrap push is specifically authorized. Do not advance past checkpoin
 - Verified task base: origin/dev at that documentation commit. Branch:
   task/egi-database-01-04. Worktree:
   /Users/marco-macbook/Documents/Codex/2026-10-05/dob/work/egi-database-01-04.
-- Implementation delivery: local diff, not committed/pushed or merged. No PR opened
-  and no issue closed. Checkpoint review precedes further execution/delivery.
+- Historical delivery state at initial checkpoint: local diff, before user review.
+  The user subsequently accepted it; e03f2f9 was pushed to dev. No PR opened and
+  no issue closed. See the current continuation record below.
 - Policies confirmed by user: self-approval with propose/approve for all affected
   territories; temporary closure stays discoverable with explicit status.
 - Actual runtime: PostgreSQL 18.3, PostGIS 3.6.0, Sqitch 1.6.1, DBD::Pg 3.21.2.
@@ -512,3 +513,82 @@ passed again. This commit delivers the reviewed first group; actual delivery SHA
 and the next group’s fetched base will be recorded after push. Grouped stepwise
 mode continues, with the next pause after #9. No master merge or #10 execution is
 authorized by this continuation.
+
+## Group #5–#9 execution agreement, 2026-10-05
+
+The user accepted the first checkpoint, explicitly authorized push to dev and
+continued execute-reviewed-task for #5–#9. First-group implementation is delivered
+at e03f2f9ee2be1cdadd62de9cafa0b6a8bfb69636 on origin/dev. The primary local dev
+checkout was advanced in fast-forward, preserving unrelated Finder metadata.
+New branch: task/egi-database-05-09; fetched base: that exact origin/dev commit.
+Worktree: /Users/marco-macbook/Documents/Codex/2026-10-05/dob/work/egi-database-05-09.
+Scope is weekly hours, approved shared calendar effects, territorial taxonomies,
+partial translations/update work and coherent public projections. Reuse native
+Sqitch/psql verification and dedicated disposable clusters. Pause after #9; no
+#10 execution or master merge at this checkpoint. New-group delivery is pending
+its review. The user confirmed local-clock DST semantics: repeated civil intervals
+apply to both occurrences; nonexistent intervals do not occur. Continuous spans
+remain open across a clock change; countdowns use elapsed real time.
+
+## Checkpoint #5–#9 acceptance evidence, 2026-10-05
+
+Status: verified complete locally; self-reviewed; awaiting the agreed human checkpoint
+review before new-group delivery and #10. No issue was closed and no PR/master merge
+was performed. The #1–#4 delivery remains e03f2f9 on dev. This group is an uncommitted
+reviewable diff on task/egi-database-05-09 from that exact fetched base.
+
+| Issue | Implemented scope | Acceptance evidence |
+| --- | --- | --- |
+| #5 | Revision-owned scope/date/timezone/day/interval rules; tabular hours and transition evaluation | tests/contract/05-hours.sql: overnight half-open endpoints, adjacent shifts, date windows, 24h, partial/unknown, separate scopes, interval verification, restore, both DST occurrences and elapsed countdowns |
+| #6 | Common approved calendar-event revisions, explicit calendar links and typed effects | tests/contract/06-calendar.sql: hidden pending event, advisory/contact warning, approved closure/replacement, overnight effect, conflicting effects, related invalidation and restore |
+| #7 | Frozen multi-parent territorial vocabulary releases, adoption, independent release copy and assignment filtering | tests/contract/07-taxonomy.sql: cycle/cross-axis rejection, sealed children, deduplicated descendants, AND across axes, adoption overlap, independent copied identities/hierarchy and restored pinned assignments |
+| #8 | Content languages/priorities, immutable candidates/exact review/publication, per-field fallback and scoped worklist | tests/contract/08-translations.sql: partial Arabic fallback/direction, ai vs ai_verified, unchanged name reuse, changed description work, obsolete publication rejection and old completion supersession |
+| #9 | Approved directory reads, shared reference closure, safe attribution, scoped verification and public sequence | tests/contract/09-directory.sql: shared approved heads, hidden drafts/private labels, explicit contacts/access, snapshot references, open filter, old/missing checks, reader privileges and defunct direct access |
+
+Six new dependency-ordered Sqitch changes: aggregate_extensions, weekly_hours,
+shared_calendar, territorial_taxonomy, dynamic_translations, public_directory. The
+first four published deploy/revert/verify changes are byte-unchanged from e03f2f9.
+The extension registry is administrator-owned; its save/restore handlers integrate
+new owned collections before sealing and preserve exact owner/value-decision FKs.
+
+Actual final check: scripts/verify-disposable.sh, exit 0. It created only a private
+temporary cluster, deployed the already published four changes and reran their
+contracts, upgraded through #9, verified all structures and nine SQL fixtures, ran
+the real two-connection stale-base test, reverted everything, redeployed and repeated
+structural/SQL checks. PostgreSQL 18.3, PostGIS 3.6.0, Sqitch 1.6.1, DBD::Pg 3.21.2.
+The runner stopped/removed its own cluster. Existing server/data were not used.
+Evidence log: session work/execution/checkpoint-05-09.log; user-facing copy and source
+bundle: outputs/egi_database-checkpoint-05-09-verification.log and .zip.
+
+Self-review covered ownership/sealing, exact approval bases, frozen snapshots,
+publication filtering, scalar-derived coordinates, temporal boundaries/countdowns,
+public/private permissions and truthful delivery. Corrections included interval-level
+provenance, private contact hours, duplicate contact joins, effective-date selection,
+SQL alias ambiguity and dependency order in translation revert. Relevant checks were
+rerun after corrections. git diff --check passed; frozen migration diff is empty.
+
+Updated documentation: README, agent execution records, schema implementation
+clarification, setup/revision operations and docs/implementation/directory.md.
+
+Remaining boundaries: eight-day transition horizon is exposed explicitly; freshness
+thresholds remain optional caller policy; real data/bootstrap, HTTP routes, detailed
+vocabulary loading, exporter validation and SQLite artifacts are absent. No real HSDS
+or SQLite conformance is claimed. Production structural revert is not a data recovery
+policy; retained-history editorial restore is separately verified. Next step is human
+review/delivery authorization for this checkpoint; #10 requires continuation.
+
+## Human checkpoint approval, 2026-10-05
+
+The user confirmed acceptance of checkpoint #5–#9. The reviewed implementation and
+verification remain unchanged. Review is accepted; explicit authorization for the
+next delivery/continuation actions is being resolved separately under
+execute-reviewed-task. Preserve the current worktree and diff. No push, master
+merge or issue closure was performed by this approval record.
+
+## Delivery and final task authorization, 2026-10-05
+
+The user explicitly confirmed push of the reviewed #5–#9 group to dev and execution
+of issue #10 with execute-reviewed-task. Preserve grouped stepwise mode and pause
+at final acceptance review. This authorizes the coherent reviewed implementation
+commit and ordinary fast-forward dev delivery; master merge, production deployment
+and issue closure remain separate. The fetched origin/dev is still e03f2f9.
