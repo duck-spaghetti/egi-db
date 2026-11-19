@@ -54,3 +54,9 @@ plan’s task mapping before execution. Execution mode is grouped stepwise, with
 [specification](docs/design/specification.md), [action plan](docs/design/implementation-plan.md)
 and [tracker conventions](docs/agents/issue-tracker.md). Specification/plan approval
 state is recorded there; do not infer implementation scope from document creation.
+
+## Commit attribution
+
+No AI attribution in commits, pull requests or issues (no `Co-Authored-By` trailer for
+Claude, Codex or another assistant, no "Generated with …" line); see the workspace
+[AGENTS.md](../AGENTS.md#commit-attribution).
