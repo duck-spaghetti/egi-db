@@ -25,8 +25,8 @@ is delivered. The baseline uses four numbered Sqitch triplets: `001_foundation`,
 
 ## Development workflow
 
-[duck-spaghetti/egi-database](https://github.com/duck-spaghetti/egi-database) is the
-private origin. Development uses dev; completed reviewed development integrates
+[duck-spaghetti/egi-db](https://github.com/duck-spaghetti/egi-db) is the
+public origin (2026-11-19; the earlier `egi-database` repository and its issues #1–#10 were deleted). Development uses dev; completed reviewed development integrates
 into master. The initial remote main commit is preserved. Implementation happens
 on isolated task branches/worktrees from fetched dev; checkpoint approval and
 external delivery are recorded separately in the action plan.

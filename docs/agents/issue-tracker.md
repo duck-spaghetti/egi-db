@@ -4,6 +4,10 @@ Selected by the user on 2026-10-05: **GitHub Issues**.
 
 ## Current state
 
+2026-11-19: the user deleted `egi-database` and created the public `duck-spaghetti/egi-db`;
+`dev` and `master` were pushed there (default `master`). The issue links below point to the
+deleted repository and are historical.
+
 The user created [duck-spaghetti/egi-database](https://github.com/duck-spaghetti/egi-database)
 and explicitly authorized configuring it as origin and running to-tickets on the
 approved plan on 2026-10-05. Read-only GitHub inspection confirms a private repository
