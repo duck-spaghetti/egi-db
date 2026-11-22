@@ -7,3 +7,4 @@
 003_governance [002_canonical] 2026-10-05T12:02:00Z Marco <marco@egi.invalid> # Controlled review, publication, verification and extensible aggregate restore
 004_directory [003_governance] 2026-10-05T12:03:00Z Marco <marco@egi.invalid> # Hours, shared calendars, regional taxonomy, translations and public reads
 005_sync [004_directory] 2026-11-22T20:10:00Z Marco <marco@egi.invalid> # Versions per source, withdrawal from publication and same-service links for sync
+006_hardening [005_sync] 2026-11-22T22:40:00Z Marco <marco@egi.invalid> # Session temporary objects never shadow what the functions name

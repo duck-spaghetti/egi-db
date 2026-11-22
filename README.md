@@ -10,6 +10,12 @@ and approved public directory reads. No real source data, application or exporte
 is delivered. The baseline uses four numbered Sqitch triplets: `001_foundation`,
 `002_canonical`, `003_governance` and `004_directory`.
 `005_sync` adds [versions per source, withdrawal and same-service links](docs/implementation/sync.md).
+`006_hardening` keeps session temporary objects from shadowing what the functions name:
+every function searches `pg_temp` last, and only an explicit grant gives `TEMPORARY`.
+It also completes the approved sync review with guarded orphan-location withdrawal,
+shared-contact change notifications, scope checks, location territory reads and
+three supporting indexes. Native contracts, concurrency and revert/redeploy passed
+on 2026-11-22; application of 006 is confined to the authorized local A2 demo.
 
 ## Start here
 

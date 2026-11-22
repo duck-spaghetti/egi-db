@@ -30,3 +30,28 @@ canonical table, head, registration or version directly.
 
 Refused with 55000 `sync_history_exists` once a version or link exists. The cluster role
 and its membership are retained: another database may use them.
+
+## 006_hardening
+
+Every function of the EGI schemas has `search_path=pg_catalog,pg_temp`, and `PUBLIC` has no
+`TEMPORARY` on the database. A new or replaced function must set the same path:
+`tests/contract/12-hardening.sql` and the verify script fail otherwise. Database privileges
+belong to one database: a copy made from a template, or a restore without them, needs
+`REVOKE TEMPORARY ... FROM PUBLIC` again, and the verify script tells.
+
+The user also confirmed review decisions Q76–Q88 before this unreleased migration
+was completed. `withdraw_orphan_location(location, expected_public, note)` takes the
+same write lock, checks the public head, refuses any public service/contact/child
+consumer and requires publish capability on every affected territory. It removes
+only the public head and records audit and public changes. PUBLIC and readers cannot
+execute it; scoped writers and sync can. The caller selects affected orphan candidates.
+
+`withdraw_service` now checks an orphan location's own scopes before removing it,
+and notifies public services whose shared contact disappears. Moderation may hide
+an unpublished service with a null expected public head; stale expectations still
+fail. Original functions in 001–005 remain immutable.
+
+Sync can SELECT `revision_territories` to preserve a location's memberships. Three
+indexes support repeated content lookup, revision evidence reads and service history.
+Revert removes these additions and restores the 005 withdrawal operation, as well
+as reopening the temporary-object defect; use revert only on disposable databases.
