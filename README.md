@@ -9,6 +9,7 @@ evidence, canonical drafts, controlled publication, scoped verification, restora
 and approved public directory reads. No real source data, application or exporter
 is delivered. The baseline uses four numbered Sqitch triplets: `001_foundation`,
 `002_canonical`, `003_governance` and `004_directory`.
+`005_sync` adds [versions per source, withdrawal and same-service links](docs/implementation/sync.md).
 
 ## Start here
 
