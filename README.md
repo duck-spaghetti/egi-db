@@ -15,7 +15,14 @@ every function searches `pg_temp` last, and only an explicit grant gives `TEMPOR
 It also completes the approved sync review with guarded orphan-location withdrawal,
 shared-contact change notifications, scope checks, location territory reads and
 three supporting indexes. Native contracts, concurrency and revert/redeploy passed
-on 2026-11-22; application of 006 is confined to the authorized local A2 demo.
+on 2026-11-22; application of 006 is confined to authorized local A2/A3 targets.
+
+`007_linked_supplements` adds the explicitly approved A3 reader projection for
+linked secondary contacts/access conditions, without new tables or changing
+001–006. Only an exact approved, source-pinned working revision behind a current
+public principal is eligible; private and pending fields remain inaccessible.
+See [the contract](docs/implementation/sync.md#linked-supplements--007).
+007 is applied only to disposable checks and the isolated local A3 database.
 
 ## Start here
 
