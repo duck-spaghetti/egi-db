@@ -113,3 +113,54 @@ Revert restores the exact 007 projection and drops only the helper. Verification
 PostgreSQL 18.3/PostGIS 3.6: full deploy/verify/contracts/concurrency and
 revert/redeploy through 008 passed; importer native cases reproduce the leak on 007
 and show 008 suppressing both alternatives, labelled forms and phone/WhatsApp.
+
+
+## Persistent contact protections — 009
+
+EGI-67 records the confirmed persistent privacy remedy. Migration 009 preserves
+001–008 and creates three append-only governance tables: protection activations,
+immutable scope applications and reviewed resolutions. A scope application has its
+own `scope_id`; a previous exclusion cannot clear a later reapplication. Sticky
+same-service scope survives unlink/principal changes, and propagates from retained
+scopes to later explicit same-service associations. Unrelated services sharing a
+number are not a global blacklist.
+
+Whole-value Italian single numbers, full slash-separated lists and one terminal
+1–3 digit suffix establish identities across phone/WhatsApp/telephone-like `other`.
+Unicode whitespace, supported prefixes and labels normalize consistently with the
+importer. Recognition never turns `other` into a public/callable contact. Uncertain
+private phone/WhatsApp or telephone-like `other` activates a hold; unrelated private
+email, URL and notes do not. Own uncertainty preserves existing own-principal public
+contacts, but inherited uncertainty cannot bypass secondary telephone withholding.
+Detail, linked supplements, public contact view and label reads use effective state.
+
+The registry starts empty. Effective reads also guard current private revisions;
+triggers retain restrictions before publication replaces a head, withdrawal,
+link changes or source-entry rebinding can lose that evidence. No historical
+inventory or bulk population runs in deploy. Older restrictions absent from current
+state remain outside the recovered history until a separately reviewed inventory.
+
+`governance.read_contact_protections(service uuid)` returns only the effective
+numbers, holds and protection identifiers needed by sync/authorized moderators,
+checking existing actor and affected-territory capabilities. Ledger tables remain
+inaccessible to public readers, ordinary writers and sync. The bounded boolean
+`api.service_contact_visible(service, subject, component, contact_link)` checks an
+actual public contact association and its effective label, without exposing keys.
+
+`governance.publish_contact_protection_resolution(target, approved, expected_public,
+protection_ids, scope_service, note)` requires `egi_privacy_moderator` (NOLOGIN),
+existing publication authority across all affected territories, the exact approved
+revision/head and a nonempty reason. A null scope service releases an origin
+protection; a service value records a scoped exclusion. It publishes the revision
+and records the resolution atomically under the existing write lock. Stale,
+unauthorized or failed publication leaves both unchanged. Resolving one uncertain
+component leaves an independent component's hold active. Routine publication,
+restore and sync cannot release restrictions. No real login is automatically
+made a member of this new role.
+
+Revert refuses a populated register rather than deleting decision history; empty
+disposable deploy/revert/redeploy remains supported. All definer helpers use a safe
+search path and limited grants. Native importer histories cover protection retention,
+SQL/Python matching, linked scope generations, explicit/failed/concurrent releases,
+territorial denial and reader/sync privilege boundaries. Execution authorization for
+this checkpoint excludes retained demo updates and historical inventory/loading.

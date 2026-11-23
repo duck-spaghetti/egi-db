@@ -30,6 +30,13 @@ also hides each derived alternative. No table, grant or public JSON shape change
 See [the contract](docs/implementation/sync.md#contact-aliases--008). 008 is applied
 only to disposable checks and the isolated local B1 database.
 
+`009_contact_protection_register` (EGI-67) adds persistent, attributable privacy
+protections and guarded public reads across linked descriptions. Sync consumes a
+bounded private operation; release requires an explicitly reviewed publication
+and the separate `egi_privacy_moderator` role. See [the contract](docs/implementation/sync.md#persistent-contact-protections--009).
+Execution is currently confined to disposable tests: no historical inventory,
+backfill, retained demo application or real-login membership grant has occurred.
+
 ## Start here
 
 - [AGENTS.md](AGENTS.md): execution scope and decision boundaries.
