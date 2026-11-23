@@ -24,6 +24,12 @@ public principal is eligible; private and pending fields remain inaccessible.
 See [the contract](docs/implementation/sync.md#linked-supplements--007).
 007 is applied only to disposable checks and the isolated local A3 database.
 
+`008_contact_aliases` (B1) extends 007's private-contact suppression to terminal
+phone shorthand such as `06 45460313/4`: a private compound on the principal now
+also hides each derived alternative. No table, grant or public JSON shape changes.
+See [the contract](docs/implementation/sync.md#contact-aliases--008). 008 is applied
+only to disposable checks and the isolated local B1 database.
+
 ## Start here
 
 - [AGENTS.md](AGENTS.md): execution scope and decision boundaries.

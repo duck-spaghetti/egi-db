@@ -94,3 +94,22 @@ approved/unreviewed/rejected/draft/hidden/distinct/obsolete identity boundaries,
 private contacts and taxonomy scoping. The app's separate native harness verifies
 reader isolation and fragment refresh while the core snapshot is still cached.
 The production owner choice C and external delivery remain separate.
+
+## Contact aliases — 008
+
+B1 user decision (plan r0.1): 007 compared one fingerprint per contact, so a private
+compound such as `06 45460313/4` (fingerprint `064546031314`) did not suppress the
+secondary's public `06 45460313`. The private helper
+`governance.contact_aliases(channel text, value text)` returns the original
+fingerprint plus, for phone/WhatsApp values with an optional `Tel.`/`Telefono`
+label and a 1–3 digit terminal suffix after at least six base digits, the base
+number and the suffix-substituted number. `api.linked_service_supplements` changes
+only fingerprint equality into alias-array overlap; its JSON shape, grants and
+eligibility are unchanged. The helper is revoked from PUBLIC and readers. This is
+conservative suppression, not general contact entity resolution, and creates no
+public contact. The importer's `importers/common/phones.py` applies the same rule.
+
+Revert restores the exact 007 projection and drops only the helper. Verification on
+PostgreSQL 18.3/PostGIS 3.6: full deploy/verify/contracts/concurrency and
+revert/redeploy through 008 passed; importer native cases reproduce the leak on 007
+and show 008 suppressing both alternatives, labelled forms and phone/WhatsApp.

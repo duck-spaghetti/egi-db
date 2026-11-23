@@ -9,3 +9,4 @@
 005_sync [004_directory] 2026-11-22T20:10:00Z Marco <marco@egi.invalid> # Versions per source, withdrawal from publication and same-service links for sync
 006_hardening [005_sync] 2026-11-22T22:40:00Z Marco <marco@egi.invalid> # Session temporary objects never shadow what the functions name
 007_linked_supplements [006_hardening] 2026-11-22T23:10:00Z Marco <marco@egi.invalid> # Approved linked-source contacts and access fragments only
+008_contact_aliases [007_linked_supplements] 2026-11-23T00:30:00Z Marco <marco@egi.invalid> # Private compound contacts protect every interpreted terminal alternative
