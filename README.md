@@ -34,8 +34,11 @@ only to disposable checks and the isolated local B1 database.
 protections and guarded public reads across linked descriptions. Sync consumes a
 bounded private operation; release requires an explicitly reviewed publication
 and the separate `egi_privacy_moderator` role. See [the contract](docs/implementation/sync.md#persistent-contact-protections--009).
-Execution is currently confined to disposable tests: no historical inventory,
-backfill, retained demo application or real-login membership grant has occurred.
+After disposable verification and independent review, 009 was applied on
+2026-11-24 to the separately authorized local B1 demo after a private checked backup.
+The demo retains 594 public services and zero orphan addresses; the register starts
+empty and no real login belongs to the new role. No historical inventory/backfill,
+remote delivery or staging/production deployment is included.
 
 ## Start here
 

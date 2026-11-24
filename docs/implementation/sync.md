@@ -162,5 +162,14 @@ Revert refuses a populated register rather than deleting decision history; empty
 disposable deploy/revert/redeploy remains supported. All definer helpers use a safe
 search path and limited grants. Native importer histories cover protection retention,
 SQL/Python matching, linked scope generations, explicit/failed/concurrent releases,
-territorial denial and reader/sync privilege boundaries. Execution authorization for
-this checkpoint excludes retained demo updates and historical inventory/loading.
+territorial denial and reader/sync privilege boundaries. The initial disposable
+checkpoint excluded retained demo updates. A separate grant on 2026-11-24 authorized
+application of this exact reviewed 009 to the existing B1 demo only, after backup.
+Deploy/verify passed; all 594 details read successfully through the restricted
+reader, with zero orphan addresses. The register remains empty, role membership
+count is zero, and actual reader probes deny ledger access/private operations.
+The two existing latest offline sync plans require no writes; persisted domain rows
+and public sequence remain unchanged. No historical inventory/loading, real-login
+role grant, remote delivery or staging/production application has occurred.
+Workspace evidence: `.scratch/mvp/b1-contact-protection-demo.md` and its 2026-11-24
+check directory. Overall B1 acceptance remains the user's decision.
