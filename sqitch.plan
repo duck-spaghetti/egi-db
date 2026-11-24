@@ -1,0 +1,13 @@
+%syntax-version=1.0.0
+%project=egi_database
+%uri=https://github.com/duck-spaghetti/egi-database
+
+001_foundation 2026-10-05T12:00:00Z Marco <marco@egi.invalid> # Typed identities, revisions, original content and retained source evidence
+002_canonical [001_foundation] 2026-10-05T12:01:00Z Marco <marco@egi.invalid> # Canonical organizations, places, services and geographic relationships
+003_governance [002_canonical] 2026-10-05T12:02:00Z Marco <marco@egi.invalid> # Controlled review, publication, verification and extensible aggregate restore
+004_directory [003_governance] 2026-10-05T12:03:00Z Marco <marco@egi.invalid> # Hours, shared calendars, regional taxonomy, translations and public reads
+005_sync [004_directory] 2026-11-22T20:10:00Z Marco <marco@egi.invalid> # Versions per source, withdrawal from publication and same-service links for sync
+006_hardening [005_sync] 2026-11-22T22:40:00Z Marco <marco@egi.invalid> # Session temporary objects never shadow what the functions name
+007_linked_supplements [006_hardening] 2026-11-22T23:10:00Z Marco <marco@egi.invalid> # Approved linked-source contacts and access fragments only
+008_contact_aliases [007_linked_supplements] 2026-11-23T00:30:00Z Marco <marco@egi.invalid> # Private compound contacts protect every interpreted terminal alternative
+009_contact_protection_register [008_contact_aliases] 2026-11-23T20:00:00Z Marco <mfederici@proton.me> # Persistent private-contact restrictions, same-service scope and explicit moderated resolution

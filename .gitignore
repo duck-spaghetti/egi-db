@@ -1,0 +1,5 @@
+sqitch.local.conf
+.env
+.scratch/
+*.log
+.DS_Store
