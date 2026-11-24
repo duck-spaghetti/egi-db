@@ -9,6 +9,36 @@ evidence, canonical drafts, controlled publication, scoped verification, restora
 and approved public directory reads. No real source data, application or exporter
 is delivered. The baseline uses four numbered Sqitch triplets: `001_foundation`,
 `002_canonical`, `003_governance` and `004_directory`.
+`005_sync` adds [versions per source, withdrawal and same-service links](docs/implementation/sync.md).
+`006_hardening` keeps session temporary objects from shadowing what the functions name:
+every function searches `pg_temp` last, and only an explicit grant gives `TEMPORARY`.
+It also completes the approved sync review with guarded orphan-location withdrawal,
+shared-contact change notifications, scope checks, location territory reads and
+three supporting indexes. Native contracts, concurrency and revert/redeploy passed
+on 2026-11-22; application of 006 is confined to authorized local A2/A3 targets.
+
+`007_linked_supplements` adds the explicitly approved A3 reader projection for
+linked secondary contacts/access conditions, without new tables or changing
+001–006. Only an exact approved, source-pinned working revision behind a current
+public principal is eligible; private and pending fields remain inaccessible.
+See [the contract](docs/implementation/sync.md#linked-supplements--007).
+007 is applied only to disposable checks and the isolated local A3 database.
+
+`008_contact_aliases` (B1) extends 007's private-contact suppression to terminal
+phone shorthand such as `06 45460313/4`: a private compound on the principal now
+also hides each derived alternative. No table, grant or public JSON shape changes.
+See [the contract](docs/implementation/sync.md#contact-aliases--008). 008 is applied
+only to disposable checks and the isolated local B1 database.
+
+`009_contact_protection_register` (EGI-67) adds persistent, attributable privacy
+protections and guarded public reads across linked descriptions. Sync consumes a
+bounded private operation; release requires an explicitly reviewed publication
+and the separate `egi_privacy_moderator` role. See [the contract](docs/implementation/sync.md#persistent-contact-protections--009).
+After disposable verification and independent review, 009 was applied on
+2026-11-24 to the separately authorized local B1 demo after a private checked backup.
+The demo retains 594 public services and zero orphan addresses; the register starts
+empty and no real login belongs to the new role. No historical inventory/backfill,
+remote delivery or staging/production deployment is included.
 
 ## Start here
 

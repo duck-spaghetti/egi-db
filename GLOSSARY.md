@@ -72,3 +72,21 @@ A physical delivery place that may host multiple services, including services fr
 different organizations and categories. A host facility's operator is not necessarily
 the organization delivering each hosted service.
 _Avoid_: Service, mandatory single provider
+
+**Compound phone contact**:
+A contact expression that denotes multiple telephone numbers, written as complete
+numbers or through a terminal abbreviation. Its original wording is distinct from
+the individual numbers it may denote.
+_Avoid_: Single telephone number, automatically callable contact
+
+**Protected phone identity**:
+An individual telephone number whose publication is restricted by an editorial
+decision, including when it appears within a compound contact. Recognizing that
+identity for protection does not establish permission to publish it.
+_Avoid_: Public contact, verified contact, automatically normalized contact
+
+**Contact protection register**:
+The maintained record of editorial restrictions on contact publication, including
+unresolved telephone restrictions and their explicit release decisions. Active
+restrictions persist independently of source updates or restored content.
+_Avoid_: Source contact list, current revision visibility, public contact directory
