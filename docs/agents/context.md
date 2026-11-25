@@ -1,5 +1,8 @@
 # Database context
 
+Sections dated 2026-10-05 are historical: issues #1–#10 were delivered (PR #2 to
+`master`). Current rules are in [AGENTS.md](../../AGENTS.md).
+
 ## User decisions
 
 On 2026-10-05 the user selected these constraints:

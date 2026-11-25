@@ -3,7 +3,14 @@
 Read the [shared planning and collaboration guide](../../../docs/agents/planning-and-collaboration.md)
 for task records, workspace establishment, resume and contributor coordination.
 
-## Current planning records
+## Current state (2026-11-25)
+
+Issues #1–#10 are delivered: `dev` integrated them and PR #2 promoted them to
+`master`. New work follows the workspace development cycle, is tracked in Linear
+(`repo/database`) and branches from the fetched `origin/dev`. The sections below are
+the historical record of the #1–#10 effort.
+
+## Planning records (2026-10-05)
 
 The maintained design is [canonical-database.md](../design/canonical-database.md).
 The accompanying [API/data inventory](../design/api-and-data-inventory.md) records
@@ -26,7 +33,7 @@ for it; this does not authorize concurrent implementation or overlapping reposit
 edits. Review documentation changes against the user's supplied constraints and
 retain pending choices as proposals.
 
-## Current specification/planning phase
+## Specification/planning phase (historical)
 
 The user accepts the structural proposal as sufficient and explicitly invoked
 `to-spec` followed by `plan-with-docs`. The specification is synthesized; the action
@@ -51,16 +58,17 @@ Implementation delivery and final merge require verified reviewable results; the
 current bootstrap push is specifically authorized. Do not advance past checkpoint #4.
 
 If the shared parent guides are absent in a standalone clone/worktree, use the
-[worktree baseline](worktree-baseline.md) and the database-specific execution record.
+[worktree baseline](worktree-baseline.md) and the Linear milestone record (the action plan
+for #1–#10).
 
-## Current group continuation
+## Group continuation (historical)
 
 The #1–#4 review was accepted and pushed to dev at e03f2f9. The user authorized
 #5–#9 in the same grouped stepwise mode, on task/egi-database-05-09 from that base.
 Pause after #9 for review and delivery authorization, before #10/master integration.
 Use the current action-plan record; earlier phase records above are historical.
 
-## Final integrated acceptance continuation
+## Final integrated acceptance continuation (historical)
 
 The user accepted #5–#9 and explicitly authorized push to dev plus #10 execution.
 The reviewed group is delivered at 9d4013c; #10 uses task/egi-database-10 from that
