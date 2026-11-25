@@ -40,6 +40,13 @@ The demo retains 594 public services and zero orphan addresses; the register sta
 empty and no real login belongs to the new role. No historical inventory/backfill,
 remote delivery or staging/production deployment is included.
 
+`010_access` (EGI-81, B3.1) lets the app act with one editorial login while the
+database verifies each moderator's session and only then knows the actor: accounts,
+OIDC or password identities, 48-hour invitations, 14-day sessions with 8 hours of
+idle time, and `release_protection` as the admin's capability. See
+[the contract](docs/implementation/access.md). Verified on disposable clusters only
+(2026-11-25); not applied to any other database.
+
 ## Start here
 
 - [AGENTS.md](AGENTS.md): execution scope and decision boundaries.

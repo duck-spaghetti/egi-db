@@ -11,3 +11,4 @@
 007_linked_supplements [006_hardening] 2026-11-22T23:10:00Z Marco <marco@egi.invalid> # Approved linked-source contacts and access fragments only
 008_contact_aliases [007_linked_supplements] 2026-11-23T00:30:00Z Marco <marco@egi.invalid> # Private compound contacts protect every interpreted terminal alternative
 009_contact_protection_register [008_contact_aliases] 2026-11-23T20:00:00Z Marco <mfederici@proton.me> # Persistent private-contact restrictions, same-service scope and explicit moderated resolution
+010_access [009_contact_protection_register] 2026-11-25T23:00:00Z Marco <mfederici@proton.me> # Moderator accounts, invitations and sessions verified by the database behind one editorial login (EGI-81)
