@@ -1,8 +1,8 @@
 # Database planning workflow
 
-Follow the [shared task workflow](../../../docs/agents/workflow.md) for approved
-implementation, execution mode, evidence and delivery. The current session adds
-authorized design discussion and documentation, and remains planning only.
+Follow the [shared development cycle](../../../docs/agents/workflow.md) for new work,
+execution mode, evidence and delivery. The steps below record how the canonical
+database design was produced (2026-10-05).
 
 1. Inspect local repositories, API/model drafts and representative source data.
 2. Verify relevant HSDS and tool facts with authoritative documentation.
@@ -28,13 +28,13 @@ Keep readiness explicit in the design: interview in progress, proposed design,
 review-ready, reviewed, approved for implementation. Suggested implementation
 phases are not approved tickets or an execution plan.
 
-## Active execution agreement
+## #1–#10 execution agreement (historical)
 
-The user authorized execute-reviewed-task in grouped stepwise mode: #1–#4,
-#5–#9, then #10. The first checkpoint was reviewed and pushed to dev; current checkpoint is #10 integrated acceptance. The development base is dev; master
-is the completed integration target. Use the action plan’s execution record for
-actual branch/worktree, acceptance evidence and delivery state. Earlier design-only
-notes describe the initialization phase, not current authorization.
+The user authorized execute-reviewed-task in grouped stepwise mode: #1–#4, #5–#9,
+then #10. All three groups were accepted, integrated into `dev` and promoted to
+`master` through PR #2; the action plan holds their evidence. New work develops from
+`origin/dev`, and promotion to `master` needs the user's authorization.
 
 If the shared parent guides are absent in a standalone clone/worktree, use the
-[worktree baseline](worktree-baseline.md) and the database-specific execution record.
+[worktree baseline](worktree-baseline.md) and the Linear milestone record (the action plan
+for #1–#10).
