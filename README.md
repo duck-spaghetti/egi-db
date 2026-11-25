@@ -56,10 +56,11 @@ remote delivery or staging/production deployment is included.
 ## Development workflow
 
 [duck-spaghetti/egi-db](https://github.com/duck-spaghetti/egi-db) is the
-public origin (2026-11-19; the earlier `egi-database` repository and its issues #1–#10 were deleted). Development uses dev; completed reviewed development integrates
-into master. The initial remote main commit is preserved. Implementation happens
-on isolated task branches/worktrees from fetched dev; checkpoint approval and
-external delivery are recorded separately in the action plan.
+public origin (2026-11-19; the earlier `egi-database` repository and its issues #1–#10 were deleted).
+Development uses `dev`; promoting `dev` to `master` needs the user's authorization.
+Implementation happens on isolated task branches/worktrees from the fetched `origin/dev`,
+tracked in Linear. Issues #1–#10 were delivered through PR #2; the checkpoint notes
+below are historical.
 
 The #5–#9 checkpoint adds relational hours and approved calendar effects, territorial
 taxonomy, dynamic translations and public directory reads. Read the

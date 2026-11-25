@@ -6,22 +6,17 @@ will manage structure/deployment. A separate data bootstrap will follow once
 source data and its contracts are ready. Future SQLite files are derived offline
 distributions of the same canonical dataset.
 
-## Current authorization
+## Current state
 
-The user authorized execution of the approved specification v1.1 and plan r0.2
-through issue #10, using execute-reviewed-task and grouped stepwise review.
-The #1–#9 reviews were accepted and pushed to dev; #10 passed integrated acceptance.
-The user authorized final dev push, independent review, PR to master and closure
-of all ten issues after acceptance verification. Initial changeset consolidation
-into four numbered triplets is explicitly authorized; preserve Git history. Selected Sqitch setup,
-SQL/DDL and synthetic checks on a dedicated disposable PostgreSQL 18.3/PostGIS
-target are within this execution scope. Preserve original app/source references.
+Issues #1–#10 (specification v1.1, plan r0.2) are delivered: `dev` integrated them
+and PR #2 promoted them to `master`. New work follows the workspace development
+cycle, is tracked in Linear (`repo/database`) and branches from the fetched
+`origin/dev`; promoting `dev` to `master` needs the user's authorization. Preserve
+existing `master` and `dev` history and original app/source references.
 
-Development uses dev; completed reviewed development integrates into master. The
-initial documentation commit/push to dev and branch bootstrap are authorized.
-Implement on an isolated task branch/worktree from fetched origin/dev. Delivery
-of implementation commits and final merge follow the execution agreement in the
-action plan; preserve the existing remote main history.
+The #1–#10 execution agreement (grouped stepwise; Sqitch, SQL/DDL and synthetic
+checks on a dedicated disposable PostgreSQL 18.3/PostGIS target) is historical;
+its record is the action plan. New work needs its own approved scope.
 
 Follow the shared workspace [AGENTS.md](../AGENTS.md) for autonomy, execution
 approval, whole-set/stepwise mode, completion and external Git/delivery boundaries.
@@ -48,12 +43,11 @@ Use English for database identifiers and maintained documentation. Record explic
 user decisions separately from research findings and recommendations. Track open
 questions in the design; use ordinary chat questions for this interview so the user
 can answer every round. Confirm shared understanding before treating the design as
-review-ready. GitHub is the selected tracker; the user-created repository is configured as origin.
-The approved `to-tickets` breakdown is published as issues #1–#10; read the action
-plan’s task mapping before execution. Execution mode is grouped stepwise, with the next checkpoint after issue #10. Before specification/task planning read
+review-ready. Linear is the tracker for new work; GitHub issues #1–#10 and their
+task mapping in the action plan are historical. Before specification/task planning read
 [specification](docs/design/specification.md), [action plan](docs/design/implementation-plan.md)
-and [tracker conventions](docs/agents/issue-tracker.md). Specification/plan approval
-state is recorded there; do not infer implementation scope from document creation.
+and [tracker conventions](docs/agents/issue-tracker.md). Do not infer implementation
+scope from document creation.
 
 ## Commit attribution
 

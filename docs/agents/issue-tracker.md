@@ -1,8 +1,11 @@
 # Database issue tracker
 
-Selected by the user on 2026-10-05: **GitHub Issues**.
+New database work is tracked in Linear (team EGI, `repo/database`) since 2026-11-25;
+follow the workspace [tracker guide](../../../docs/agents/issue-tracker.md). The
+GitHub Issues selection of 2026-10-05 and issues #1–#10 below are historical: they
+were delivered to `master` through PR #2.
 
-## Current state
+## GitHub issues #1–#10 (historical)
 
 2026-11-19: the user deleted `egi-database` and created the public `duck-spaghetti/egi-db`;
 `dev` and `master` were pushed there (default `master`). The issue links below point to the
@@ -28,7 +31,7 @@ directory. These documents are not substitutes for created GitHub issue identiti
   dependencies, decisions and approval state.
 - [Schema proposal v0.2](../design/schema-proposal.md): structural detail.
 
-## Task publication and subsequent changes
+## Publication rules used for #1–#10 (historical)
 
 The initial breakdown and publication scope were approved. For additional issues
 or a material change to the approved task set, obtain the applicable scope decision. Preserve executor access by including
