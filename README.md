@@ -47,6 +47,12 @@ idle time, and `release_protection` as the admin's capability. See
 [the contract](docs/implementation/access.md). Verified on disposable clusters only
 (2026-11-25); not applied to any other database.
 
+`011_editorial` (EGI-82, B3.1) stores visitor contributions privately: global intake
+limits without IPs, claims, waiting reasons, per-proposal decisions, outcomes tied to
+publications, and the retention purge (contact at closure or 90 days, text 30 days
+after closure). See [the contract](docs/implementation/editorial.md). Verified on
+disposable clusters only (2026-11-25).
+
 ## Start here
 
 - [AGENTS.md](AGENTS.md): execution scope and decision boundaries.
