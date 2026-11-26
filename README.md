@@ -86,6 +86,11 @@ and explicit candidate creation/updates preserving manual fields. No live model,
 credentials or worker login is seeded. See
 [the job and candidate contract](docs/implementation/preparation-jobs.md).
 
+`019_community_submissions` (EGI-105) sends a selected confirmed card as an
+attributed immutable editorial snapshot, separate from its private original and
+from canonical acceptance. It preserves visitor intake/retention and guards the
+generic Community closure path. See [the contract](docs/implementation/community-submissions.md).
+
 ## Start here
 
 - [AGENTS.md](AGENTS.md): execution scope and decision boundaries.
