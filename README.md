@@ -119,3 +119,6 @@ taxonomy, dynamic translations and public directory reads. Read the
 The group was reviewed and pushed to dev at 9d4013c. Ticket #10 supplies final
 [integrated acceptance](docs/implementation/acceptance.md). The user authorized final
 dev delivery, independent review, a PR to master and issue closure after verification.
+
+Community proposal acceptance and publication boundaries are described in
+[Community acceptance](docs/implementation/community-acceptance.md).

@@ -80,7 +80,7 @@ SELECT pg_temp.assert_true(position('UNSENT SIBLING PRIVATE VALUE' IN :'copied')
 SELECT pg_temp.assert_true(editorial.read_community_snapshot(:'next_contribution')#>>'{snapshot,parent_contribution_id}'=:'contribution','new version is a linked update');
 SELECT pg_temp.expect_error(format('SELECT preparation.read_input(%L,%L)',:'ws',:'inp'),'P0002','preparation_not_found');
 SELECT pg_temp.expect_error(format('SELECT preparation.read_history(%L,%L,0,100)',:'ws',:'card'),'P0002','preparation_not_found');
-SELECT pg_temp.expect_error(format('SELECT editorial.close_contribution(%L,%L,NULL,%L)',:'contribution','published',gen_random_uuid()),'55000','community_acceptance_required');
+SELECT pg_temp.expect_error(format('SELECT editorial.close_contribution(%L,%L,NULL,%L)',:'contribution','published',gen_random_uuid()),'23514','community_publication_required');
 SELECT editorial.close_contribution(:'contribution','rejected','Fixture closed',NULL);
 COMMIT;
 RESET SESSION AUTHORIZATION;
