@@ -53,6 +53,11 @@ publications, and the retention purge (contact at closure or 90 days, text 30 da
 after closure). See [the contract](docs/implementation/editorial.md). Verified on
 disposable clusters only (2026-11-25).
 
+`012_revision_body` (EGI-83, B3.1) reads a service or location revision back as the
+body `save_revision` takes, so moderator edits start from the complete aggregate. Same
+rules as sync's reader. See [the contract](docs/implementation/editorial.md). Verified
+on disposable clusters only (2026-11-26).
+
 ## Start here
 
 - [AGENTS.md](AGENTS.md): execution scope and decision boundaries.

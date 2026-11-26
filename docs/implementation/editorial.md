@@ -57,3 +57,25 @@ system scheduler are in `scripts/retention/` (systemd unit and timer, launchd pl
 they are templates and are not installed by any script.
 
 Revert refuses while contributions exist (`contributions_exist`).
+
+## Reading a revision for editing — 012
+
+`save_revision` replaces the whole aggregate: a component list missing from the body
+is saved empty. `editorial.revision_body(revision)` therefore reads a service or
+location revision back as the exact body `save_revision` takes: scalar fields, texts,
+`original_language`, contacts, place, organizations, conditions, contact links,
+languages, coverage, classifications, territories, addresses, weekly hours, calendar
+exceptions, component identifiers and the evidence of every value. Fields the revision
+does not state are absent. Scalar fields carry their evidence under `evidence`, an
+explicit empty list where there is none, so a moderator's value never borrows the
+record's evidence.
+
+It runs only for the editorial login within a verified session (`session_required`
+otherwise) and refuses anything but a service or location revision
+(`revision_not_found`). It follows the same rules as sync's reader in egi-importer
+(`sync/db.py`, `aggregate`): on 2026-11-26 both gave the same body for all 862
+revisions produced by sync's native tests. Sync can call this function instead in
+B3.2. Saving a body read this way unchanged gives the same body back
+(`tests/contract/15-revision-body.sql`).
+
+Revert drops the three functions; nothing is stored.
