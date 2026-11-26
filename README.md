@@ -80,6 +80,12 @@ immutable Admin admission. It records registry metadata only; source-evidence
 publication enforcement follows in EGI-106. See
 [the contract](docs/implementation/community-sources.md).
 
+`017_preparation_jobs` and `018_preparation_candidates` (EGI-103) add isolated
+one-dispatch AI jobs, redacted eligible payloads, UTC monthly cost reservations
+and explicit candidate creation/updates preserving manual fields. No live model,
+credentials or worker login is seeded. See
+[the job and candidate contract](docs/implementation/preparation-jobs.md).
+
 ## Start here
 
 - [AGENTS.md](AGENTS.md): execution scope and decision boundaries.
