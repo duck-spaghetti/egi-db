@@ -70,6 +70,11 @@ expected-version saves. Uninvited Admins have no access. See
 [the contract and verification limits](docs/implementation/preparations.md).
 Only disposable verification is authorized at this stage.
 
+`015_preparation_history` (EGI-101) adds paginated history, compensating undo,
+owner-only workspace trash, per-card recovery and guarded 30-day private purge.
+See [preparation lifecycle](docs/implementation/preparations.md#history-and-trash--015--egi-101).
+No scheduler or environment login is installed by the migration.
+
 ## Start here
 
 - [AGENTS.md](AGENTS.md): execution scope and decision boundaries.
