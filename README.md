@@ -58,6 +58,12 @@ body `save_revision` takes, so moderator edits start from the complete aggregate
 rules as sync's reader. See [the contract](docs/implementation/editorial.md). Verified
 on disposable clusters only (2026-11-26).
 
+`013_editorial_observations` (EGI-84, B3.1) records what a moderator verified as an
+observation of the "Redazione EGI" source, so services and locations created in the
+workspace cite evidence and publish under the unchanged evidence rule. See
+[the contract](docs/implementation/editorial.md). Verified on disposable clusters only
+(2026-11-26).
+
 ## Start here
 
 - [AGENTS.md](AGENTS.md): execution scope and decision boundaries.

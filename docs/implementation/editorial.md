@@ -79,3 +79,38 @@ B3.2. Saving a body read this way unchanged gives the same body back
 (`tests/contract/15-revision-body.sql`).
 
 Revert drops the three functions; nothing is stored.
+
+## Moderator observations as a source — 013
+
+Publication requires at least one value backed by supporting evidence
+(`missing_evidence`). Edits keep the source evidence of what they do not change, but a
+service or location created in the workspace has no source record. Instead of
+relaxing that rule, `editorial.record_observation(subject_kind, observed, method, note)`
+turns the person's own check into a source, as the design foresees for manual
+corrections (`docs/design/canonical-database.md`).
+
+- `subject_kind` is `service` or `location`; `observed` maps attribute codes to the
+  values checked (for example `{"name": …, "address": …}`); `method` is `phone_call`,
+  `official_website`, `site_visit`, `document` or `other`; `note` is optional, at most
+  1000 characters, and must not hold third parties' personal data.
+- Each call writes one record of the "Redazione EGI" source (code `egi_editorial`,
+  dataset `observations`) whose payload names the actor, method, note, values and time,
+  with a capture, a processing run and one `stated` assertion per attribute (method
+  `editorial_<method>`). It returns the assertion of each attribute, which the body
+  passed to `save_revision` cites as supporting evidence.
+- The capture makes the public card credit "Redazione EGI" with the observation date,
+  like any other source (`api.source_attributions`).
+- It runs only for the editorial login within a verified session, for a person with a
+  global `propose` capability. Invalid input is refused with `invalid_subject_kind`,
+  `invalid_method`, `nothing_observed` or `note_too_long`.
+- The source and its dataset are created by the first observation: a structural
+  deployment seeds no source (`tests/contract/00-clean.sql`).
+
+Sync updates only entities it created, so it leaves created services and locations
+alone; on 2026-11-26 a scratch run of sync's native harness confirmed it for a location
+at a source's address and a service there, across three syncs including a withdrawal.
+`tests/contract/16-editorial-observations.sql` covers refusals, publication without and
+with evidence, and the public attribution.
+
+Revert drops the function and the source when no observation was recorded; once one
+exists the revert refuses, since source records are immutable.
