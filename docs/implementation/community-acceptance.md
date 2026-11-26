@@ -69,3 +69,11 @@ proof preservation and changed-value rejection. All SQL contracts through 26,
 structural checks, all three concurrency checks and full direct-SQL lifecycle passed
 twice. The historical runner's success label still says through24; its glob includes
 25/26. Sqitch CLI remains unavailable; no populated database was changed.
+
+Change 022 (EGI-106) keeps scalar proof in its submitted component context. Contact
+labels/numbers, scoped schedules, weekdays and interval pairs cannot borrow equal
+values from another component to imply an unsupported combination. Explicitly moving
+the same complete proposal is still allowed. Changed combinations need matching
+submitted evidence or an explicit human observation. Contract27 covers mixed contact
+labels and interval boundaries; all SQL contracts through27, concurrency and direct
+SQL lifecycle passed twice. No public interface or table/grant was expanded.
