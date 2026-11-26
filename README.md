@@ -64,6 +64,12 @@ workspace cite evidence and publish under the unchanged evidence rule. See
 [the contract](docs/implementation/editorial.md). Verified on disposable clusters only
 (2026-11-26).
 
+`014_preparations` (EGI-100, Community) adds explicitly shared private text
+preparations, exact original input, immutable card versions, request replay and
+expected-version saves. Uninvited Admins have no access. See
+[the contract and verification limits](docs/implementation/preparations.md).
+Only disposable verification is authorized at this stage.
+
 ## Start here
 
 - [AGENTS.md](AGENTS.md): execution scope and decision boundaries.
