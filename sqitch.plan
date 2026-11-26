@@ -17,3 +17,4 @@
 013_editorial_observations [012_revision_body] 2026-11-26T14:00:00Z Marco <mfederici@proton.me> # Moderator observations as an accountable source, so created services and locations cite evidence (EGI-84)
 014_preparations [013_editorial_observations] 2026-11-26T17:00:00Z Marco <mfederici@proton.me> # Private source text, shared preparations and immutable editable card versions (EGI-100)
 015_preparation_history [014_preparations] 2026-11-26T17:30:00Z Marco <mfederici@proton.me> # Compensating undo, paginated history and private trash retention (EGI-101)
+016_community_sources [015_preparation_history] 2026-11-26T18:00:00Z Marco <mfederici@proton.me> # Attributed source registration and immutable Admin admission (EGI-102)

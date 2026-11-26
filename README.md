@@ -75,6 +75,11 @@ owner-only workspace trash, per-card recovery and guarded 30-day private purge.
 See [preparation lifecycle](docs/implementation/preparations.md#history-and-trash--015--egi-101).
 No scheduler or environment login is installed by the migration.
 
+`016_community_sources` (EGI-102) separates moderator source registration from
+immutable Admin admission. It records registry metadata only; source-evidence
+publication enforcement follows in EGI-106. See
+[the contract](docs/implementation/community-sources.md).
+
 ## Start here
 
 - [AGENTS.md](AGENTS.md): execution scope and decision boundaries.
