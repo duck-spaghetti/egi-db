@@ -57,3 +57,15 @@ final label still says 'through 24'; its glob included the new contract 25.
 Self-review covered private/immutable boundaries, source lineage, selected-fact
 binding, canonical ownership and separate publication. Combined independent review
 and integrated application/provider acceptance remain pending.
+
+Integration correction, change 021 (EGI-106): complete-baseline evidence comparison
+now aligns array components by their stable identity (weekday for day entries,
+exact unchanged value otherwise). Removing/reordering a sibling preserves unchanged
+components' proof without treating them as newly asserted facts. Changed values
+still require submitted evidence or an explicit observation. The selective snapshot
+reader also exposes its own immutable resolution, as required by the moderation
+view; it never exposes private originals or siblings. Contract 26 tests shifted
+proof preservation and changed-value rejection. All SQL contracts through 26,
+structural checks, all three concurrency checks and full direct-SQL lifecycle passed
+twice. The historical runner's success label still says through24; its glob includes
+25/26. Sqitch CLI remains unavailable; no populated database was changed.

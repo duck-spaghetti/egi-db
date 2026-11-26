@@ -22,3 +22,4 @@
 018_preparation_candidates [017_preparation_jobs] 2026-11-26T18:31:00Z Marco <mfederici@proton.me> # Select job candidates and preserve manual/cleared fields on explicit updates (EGI-103 provider completion)
 019_community_submissions [018_preparation_candidates] 2026-11-26T21:30:00Z Marco <mfederici@proton.me> # Attributed immutable selected-card submissions and selective editorial evidence (EGI-105)
 020_community_acceptance [019_community_submissions] 2026-11-26T22:00:00Z Marco <mfederici@proton.me> # Canonical draft acceptance, selective assertions, stable identity and publication-source enforcement (EGI-106)
+021_community_component_evidence [020_community_acceptance] 2026-11-27T00:00:00Z Marco <mfederici@proton.me> # Preserve evidence across canonical component shifts
