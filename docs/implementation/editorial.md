@@ -1,0 +1,116 @@
+# Visitor contributions — 011
+
+EGI-82. Visitor reports, still-valid signals and new-service proposals live in the
+private `editorial` schema. Contact and text are deleted on the agreed deadlines;
+the row, its decisions and its outcome remain. Nothing here enters canonical
+revisions or audit: a correction reaches the public only through a moderator's
+publication, which the closed contribution then references.
+
+## Roles and logins
+
+| Role | May do |
+| --- | --- |
+| `egi_intake` | only `editorial.submit_contribution(...)`; reads nothing |
+| `egi_editorial` | the moderation functions below, as the person of the verified session ([access](access.md)) |
+| `egi_retention` | only `editorial.purge_expired_contributions()` |
+
+No login is created by the migration. Per environment the owner creates one
+`LOGIN IN ROLE egi_intake` for the public app and one `LOGIN IN ROLE egi_retention`
+for the scheduled purge.
+
+## Intake
+
+`submit_contribution(kind, service, category, message, contact, contact_consent, proposals, trap)`
+returns `stored`, `trapped` (honeypot filled; nothing kept), `limited` or `closed`.
+Limits are global, without IPs: 30 per 10 minutes and 300 per day by default
+(`editorial.intake_settings`, changed by the admin with `set_intake`). Kinds:
+
+- `report` on a public service, with a category (`hours`, `contacts`, `address`,
+  `closed`, `other`), optional text and optional proposals `[{"field","value"}]`;
+- `still_valid` on a public service, carrying nothing else;
+- `new_service`, with at least a `name` proposal.
+
+A contact needs explicit consent. The public revision at submission is kept.
+
+## Moderation
+
+| Function | Effect |
+| --- | --- |
+| `list_contributions(include_closed)` | the queue, with claimant and counts |
+| `read_contribution(id)` | text, contact, proposals and history |
+| `list_moderators()` | active people a case can be handed to |
+| `claim(id, action, assignee)` | `claim`, `take_over`, `reassign`, `release`; never a lock on the service |
+| `set_waiting(id, reason)` | `evidence`, `submitter` (only with a contact), `admin`; `NULL` resumes |
+| `decide_proposal(id, decision, decided_value, note)` | `accepted`, `amended` (with the moderator's value), `rejected` |
+| `close_contribution(id, outcome, reason, publication)` | `published` needs a publication of the contribution's service; other outcomes need a reason; undecided proposals are recorded as rejected |
+| `set_intake(open, window_limit, daily_limit)`, `read_intake()` | the admin's switch and limits |
+
+Every step is in `editorial.events` with the person who took it; event details never
+carry contact or text.
+
+## Retention
+
+`purge_expired_contributions()` deletes a contact at closure or after 90 days, and a
+closed contribution's text, with its proposals' values, 30 days after closure. It
+returns the counts. Waiting does not move the deadlines. Job definitions for the
+system scheduler are in `scripts/retention/` (systemd unit and timer, launchd plist):
+they are templates and are not installed by any script.
+
+Revert refuses while contributions exist (`contributions_exist`).
+
+## Reading a revision for editing — 012
+
+`save_revision` replaces the whole aggregate: a component list missing from the body
+is saved empty. `editorial.revision_body(revision)` therefore reads a service or
+location revision back as the exact body `save_revision` takes: scalar fields, texts,
+`original_language`, contacts, place, organizations, conditions, contact links,
+languages, coverage, classifications, territories, addresses, weekly hours, calendar
+exceptions, component identifiers and the evidence of every value. Fields the revision
+does not state are absent. Scalar fields carry their evidence under `evidence`, an
+explicit empty list where there is none, so a moderator's value never borrows the
+record's evidence.
+
+It runs only for the editorial login within a verified session (`session_required`
+otherwise) and refuses anything but a service or location revision
+(`revision_not_found`). It follows the same rules as sync's reader in egi-importer
+(`sync/db.py`, `aggregate`): on 2026-11-26 both gave the same body for all 862
+revisions produced by sync's native tests. Sync can call this function instead in
+B3.2. Saving a body read this way unchanged gives the same body back
+(`tests/contract/15-revision-body.sql`).
+
+Revert drops the three functions; nothing is stored.
+
+## Moderator observations as a source — 013
+
+Publication requires at least one value backed by supporting evidence
+(`missing_evidence`). Edits keep the source evidence of what they do not change, but a
+service or location created in the workspace has no source record. Instead of
+relaxing that rule, `editorial.record_observation(subject_kind, observed, method, note)`
+turns the person's own check into a source, as the design foresees for manual
+corrections (`docs/design/canonical-database.md`).
+
+- `subject_kind` is `service` or `location`; `observed` maps attribute codes to the
+  values checked (for example `{"name": …, "address": …}`); `method` is `phone_call`,
+  `official_website`, `site_visit`, `document` or `other`; `note` is optional, at most
+  1000 characters, and must not hold third parties' personal data.
+- Each call writes one record of the "Redazione EGI" source (code `egi_editorial`,
+  dataset `observations`) whose payload names the actor, method, note, values and time,
+  with a capture, a processing run and one `stated` assertion per attribute (method
+  `editorial_<method>`). It returns the assertion of each attribute, which the body
+  passed to `save_revision` cites as supporting evidence.
+- The capture makes the public card credit "Redazione EGI" with the observation date,
+  like any other source (`api.source_attributions`).
+- It runs only for the editorial login within a verified session, for a person with a
+  global `propose` capability. Invalid input is refused with `invalid_subject_kind`,
+  `invalid_method`, `nothing_observed` or `note_too_long`.
+- The source and its dataset are created by the first observation: a structural
+  deployment seeds no source (`tests/contract/00-clean.sql`).
+
+Sync updates only entities it created, so it leaves created services and locations
+alone; on 2026-11-26 a scratch run of sync's native harness confirmed it for a location
+at a source's address and a service there, across three syncs including a withdrawal.
+`tests/contract/16-editorial-observations.sql` covers refusals, publication without and
+with evidence, and the public attribution.
+
+Revert drops the function and the source when no observation was recorded; once one
+exists the revert refuses, since source records are immutable.

@@ -40,6 +40,57 @@ The demo retains 594 public services and zero orphan addresses; the register sta
 empty and no real login belongs to the new role. No historical inventory/backfill,
 remote delivery or staging/production deployment is included.
 
+`010_access` (EGI-81, B3.1) lets the app act with one editorial login while the
+database verifies each moderator's session and only then knows the actor: accounts,
+OIDC or password identities, 48-hour invitations, 14-day sessions with 8 hours of
+idle time, and `release_protection` as the admin's capability. See
+[the contract](docs/implementation/access.md). Verified on disposable clusters only
+(2026-11-25); not applied to any other database.
+
+`011_editorial` (EGI-82, B3.1) stores visitor contributions privately: global intake
+limits without IPs, claims, waiting reasons, per-proposal decisions, outcomes tied to
+publications, and the retention purge (contact at closure or 90 days, text 30 days
+after closure). See [the contract](docs/implementation/editorial.md). Verified on
+disposable clusters only (2026-11-25).
+
+`012_revision_body` (EGI-83, B3.1) reads a service or location revision back as the
+body `save_revision` takes, so moderator edits start from the complete aggregate. Same
+rules as sync's reader. See [the contract](docs/implementation/editorial.md). Verified
+on disposable clusters only (2026-11-26).
+
+`013_editorial_observations` (EGI-84, B3.1) records what a moderator verified as an
+observation of the "Redazione EGI" source, so services and locations created in the
+workspace cite evidence and publish under the unchanged evidence rule. See
+[the contract](docs/implementation/editorial.md). Verified on disposable clusters only
+(2026-11-26).
+
+`014_preparations` (EGI-100, Community) adds explicitly shared private text
+preparations, exact original input, immutable card versions, request replay and
+expected-version saves. Uninvited Admins have no access. See
+[the contract and verification limits](docs/implementation/preparations.md).
+Only disposable verification is authorized at this stage.
+
+`015_preparation_history` (EGI-101) adds paginated history, compensating undo,
+owner-only workspace trash, per-card recovery and guarded 30-day private purge.
+See [preparation lifecycle](docs/implementation/preparations.md#history-and-trash--015--egi-101).
+No scheduler or environment login is installed by the migration.
+
+`016_community_sources` (EGI-102) separates moderator source registration from
+immutable Admin admission. It records registry metadata only; source-evidence
+publication enforcement follows in EGI-106. See
+[the contract](docs/implementation/community-sources.md).
+
+`017_preparation_jobs` and `018_preparation_candidates` (EGI-103) add isolated
+one-dispatch AI jobs, redacted eligible payloads, UTC monthly cost reservations
+and explicit candidate creation/updates preserving manual fields. No live model,
+credentials or worker login is seeded. See
+[the job and candidate contract](docs/implementation/preparation-jobs.md).
+
+`019_community_submissions` (EGI-105) sends a selected confirmed card as an
+attributed immutable editorial snapshot, separate from its private original and
+from canonical acceptance. It preserves visitor intake/retention and guards the
+generic Community closure path. See [the contract](docs/implementation/community-submissions.md).
+
 ## Start here
 
 - [AGENTS.md](AGENTS.md): execution scope and decision boundaries.
@@ -68,3 +119,54 @@ taxonomy, dynamic translations and public directory reads. Read the
 The group was reviewed and pushed to dev at 9d4013c. Ticket #10 supplies final
 [integrated acceptance](docs/implementation/acceptance.md). The user authorized final
 dev delivery, independent review, a PR to master and issue closure after verification.
+
+Community proposal acceptance and publication boundaries are described in
+[Community acceptance](docs/implementation/community-acceptance.md).
+
+`023_preparation_source_facts` (EGI-114) preserves literal organization/category
+claims separately from edited values and future canonical resolutions. v1 history
+and selective snapshots remain immutable; old writes cannot drop v2 facts. See
+[the version/evidence/lifecycle contract](docs/implementation/preparation-source-facts.md).
+Only disposable verification has been performed; see EGI-117 below for explicit
+reference acceptance. App matching/confirmation consumers follow separately.
+
+`024_preparation_fact_candidates` completes EGI-114's provider seam: an explicit
+immutable v2 job configuration, original/eligible quotation checks and candidate
+materialization with stable private fact IDs. Existing v1 jobs remain compatible;
+no model configuration or call is seeded. See the same source-fact contract.
+
+`025_preparation_reference_catalog` and `026_community_reference_acceptance` (EGI-117)
+provide bounded authorized catalog pages, context/head-checked choices and atomic
+explicit organization draft creation. No lookup/save/extraction publishes an entity.
+See [reference resolution](docs/implementation/reference-resolution.md) for v2
+decisions, source attribution, publication and rollback boundaries.
+
+`027_preparation_category_matches` completes the optional provider seam: a frozen
+public category context in immutable configuration, current pre-dispatch checks,
+conditional supplied-key matches and stable unconfirmed resolutions. Existing
+context-free protocols remain compatible; no configuration/provider call is seeded.
+
+
+`029_preparation_resolution_undo` restores literal corrections without reviving
+stale reference decisions. Contract33 covers mapped-value undo and stable replay;
+see [reference resolution](docs/implementation/reference-resolution.md).
+
+The CW1 private workbench provider (EGI-146–149, migrations 030–037) adds versioned
+[interpretations](docs/implementation/workbench-interpretations.md), immutable
+[plans and packets](docs/implementation/workbench-plans.md), separate
+[analysis/comparison coverage](docs/implementation/workbench-coverage.md), and
+[private groups with resumable apply/undo](docs/implementation/workbench-groups.md).
+The [context profile](docs/implementation/workbench-context.md) and
+[scoped proposal/receipt readers](docs/implementation/workbench-proposals.md)
+preserve exact owned source support and explicit human decisions. Model results
+never publish or confirm categories; existing explicit Community moderation remains
+the canonical boundary. Taxonomy proposals and CSV batch transport remain deferred.
+
+`scripts/verify-workbench.py` uses a caller-selected resource-owner checkout whose
+Git revision and source bytes are checked before import. The CW1 native handoff pins
+`84044a266dcbabab8319c9f5682d0437c7bea732`; the app tooling is development-only,
+with no database runtime dependency or copied resource module. Native SQL 40/41/43/44/45
+and shell 42 cover the final proof/recovery/read/retention/concurrency changes on
+owned PostgreSQL 18/Sqitch fixtures. These are technical workflow checks using
+synthetic data, with no real model call or credentials. Semantic pilot acceptance
+and real-provider evaluation remain separate gates.

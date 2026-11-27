@@ -1,0 +1,10 @@
+# systemd unit: delete visitor contacts and texts that reached their deadline (EGI-82).
+# Install with egi-retention.timer. The `egi_retention` service in the user's
+# ~/.pg_service.conf names a login that is `LOGIN IN ROLE egi_retention`; no password here.
+[Unit]
+Description=EGI contribution retention
+
+[Service]
+Type=oneshot
+Environment=PGSERVICE=egi_retention
+ExecStart=/usr/bin/psql -X -q -v ON_ERROR_STOP=1 -c "SELECT editorial.purge_expired_contributions()"

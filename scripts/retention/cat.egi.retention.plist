@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- launchd job for local demos: the same nightly purge as egi-retention.timer (EGI-82).
+     Replace PSQL with the local psql path; PGSERVICE names the retention login. -->
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+ <key>Label</key><string>cat.egi.retention</string>
+ <key>ProgramArguments</key>
+ <array>
+  <string>PSQL</string><string>-X</string><string>-q</string><string>-v</string><string>ON_ERROR_STOP=1</string>
+  <string>-c</string><string>SELECT editorial.purge_expired_contributions()</string>
+ </array>
+ <key>EnvironmentVariables</key><dict><key>PGSERVICE</key><string>egi_retention</string></dict>
+ <key>StartCalendarInterval</key><dict><key>Hour</key><integer>3</integer><key>Minute</key><integer>30</integer></dict>
+</dict>
+</plist>
