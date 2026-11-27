@@ -127,10 +127,16 @@ Community proposal acceptance and publication boundaries are described in
 claims separately from edited values and future canonical resolutions. v1 history
 and selective snapshots remain immutable; old writes cannot drop v2 facts. See
 [the version/evidence/lifecycle contract](docs/implementation/preparation-source-facts.md).
-Only disposable verification has been performed; matching and entity acceptance
-follow in EGI-117 and the remaining approved Community tickets.
+Only disposable verification has been performed; see EGI-117 below for explicit
+reference acceptance. App matching/confirmation consumers follow separately.
 
 `024_preparation_fact_candidates` completes EGI-114's provider seam: an explicit
 immutable v2 job configuration, original/eligible quotation checks and candidate
 materialization with stable private fact IDs. Existing v1 jobs remain compatible;
 no model configuration or call is seeded. See the same source-fact contract.
+
+`025_preparation_reference_catalog` and `026_community_reference_acceptance` (EGI-117)
+provide bounded authorized catalog pages, context/head-checked choices and atomic
+explicit organization draft creation. No lookup/save/extraction publishes an entity.
+See [reference resolution](docs/implementation/reference-resolution.md) for v2
+decisions, source attribution, publication and rollback boundaries.

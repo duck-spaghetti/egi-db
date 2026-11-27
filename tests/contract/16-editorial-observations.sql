@@ -15,7 +15,7 @@ SELECT access.open_session(:'admin_account',pg_temp.h('s-16'),'password',true) I
 SELECT access.verify_session(pg_temp.h('s-16'))->>'actor_id' AS actor \gset
 SELECT set_config('egi.test_actor',:'actor',true) IS NOT NULL AS ok;
 
-SELECT pg_temp.expect_error($$SELECT editorial.record_observation('organization','{"name":"x"}','phone_call',NULL)$$,'22023','invalid_subject_kind');
+SELECT pg_temp.expect_error($$SELECT editorial.record_observation('taxonomy_term','{"name":"x"}','phone_call',NULL)$$,'22023','invalid_subject_kind');
 SELECT pg_temp.expect_error($$SELECT editorial.record_observation('service','{"name":"x"}','rumour',NULL)$$,'22023','invalid_method');
 SELECT pg_temp.expect_error($$SELECT editorial.record_observation('service','{}','phone_call',NULL)$$,'22023','nothing_observed');
 SELECT pg_temp.expect_error(format('SELECT editorial.record_observation(%L,%L,%L,%L)','service','{"name":"x"}','other',repeat('x',1001)),'22001','note_too_long');

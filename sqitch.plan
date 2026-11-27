@@ -26,3 +26,5 @@
 022_community_evidence_context [021_community_component_evidence] 2026-11-27T00:01:00Z Marco <mfederici@proton.me> # Keep submitted component/interval evidence in context
 023_preparation_source_facts [022_community_evidence_context] 2026-11-27T09:00:00Z Marco <mfederici@proton.me> # Literal organization/category facts, v2 private versions and selective snapshots (EGI-114)
 024_preparation_fact_candidates [023_preparation_source_facts] 2026-11-27T10:00:00Z Marco <mfederici@proton.me> # Bind v2 job candidates to stable private source facts (EGI-114 provider completion)
+025_preparation_reference_catalog [024_preparation_fact_candidates] 2026-11-27T11:00:00Z Marco <mfederici@proton.me> # Authorized catalog context and operator-bound reference choices (EGI-117)
+026_community_reference_acceptance [025_preparation_reference_catalog] 2026-11-27T11:01:00Z Marco <mfederici@proton.me> # Atomic explicit organization/category acceptance (EGI-117)

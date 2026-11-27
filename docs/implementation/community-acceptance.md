@@ -77,3 +77,8 @@ the same complete proposal is still allowed. Changed combinations need matching
 submitted evidence or an explicit human observation. Contract27 covers mixed contact
 labels and interval boundaries; all SQL contracts through27, concurrency and direct
 SQL lifecycle passed twice. No public interface or table/grant was expanded.
+
+Changes025–026 add explicit entity/category resolution and atomic organization
+preparation. See [reference resolution](reference-resolution.md) for decision v2,
+authorized catalog context, attributable literal/relationship evidence, canonical
+organization round trips and guarded rollback. V1 decisions retain their contract.
