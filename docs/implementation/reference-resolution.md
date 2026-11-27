@@ -147,3 +147,12 @@ pre-dispatch expiry without changing immutable adoption rows or the machine cloc
 Revert027 refuses any retained immutable configuration using catalog_context. It
 never erases a job/configuration to make rollback pass. Native disposable tests
 exercise both the refusal and a safe ordered revert/redeploy on unused state.
+
+Change028 adds the optional organization_ids filter (array of at most100 UUID
+strings, organization queries only). The existing50-entry page limit, continuation,
+visibility rules and exact head metadata remain authoritative. This lets a reopened
+card obtain actual names for its selected references in bounded batches, without
+one HTTP request per fact or copying display labels into authoritative selections.
+The filter has no write/retention effect; reverting it restores the earlier query
+shape without deleting data. Native HTTP tests cover selected-ID lookup, scope and
+an oversized batch; ordered028→027→026→025 native rollback/redeploy is verified.
