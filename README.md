@@ -122,3 +122,10 @@ dev delivery, independent review, a PR to master and issue closure after verific
 
 Community proposal acceptance and publication boundaries are described in
 [Community acceptance](docs/implementation/community-acceptance.md).
+
+`023_preparation_source_facts` (EGI-114) preserves literal organization/category
+claims separately from edited values and future canonical resolutions. v1 history
+and selective snapshots remain immutable; old writes cannot drop v2 facts. See
+[the version/evidence/lifecycle contract](docs/implementation/preparation-source-facts.md).
+Only disposable verification has been performed; matching and entity acceptance
+follow in EGI-117 and the remaining approved Community tickets.

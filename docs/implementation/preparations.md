@@ -148,3 +148,10 @@ include `18-preparation-history.sql` in both cycles. Sqitch CLI remains unavaila
 for the interpreter reason above. Self-review covered locks, role isolation,
 retention guards, idempotence, immutable history and deletion independence. Job
 late-result integration remains explicitly assigned to EGI-103.
+
+## Literal source facts — 023 / EGI-114
+
+The additive [v2 source-fact contract](preparation-source-facts.md) documents literal
+organization/category preservation, stable private fact identities, evidence,
+v1 compatibility, guarded undo/downgrade and selective snapshot retention. It reuses
+these preparation operations; no new canonical writer or public projection exists.

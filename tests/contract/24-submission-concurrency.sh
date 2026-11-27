@@ -23,7 +23,10 @@ SELECT preparation.create_items(:'ws',:'inp',NULL,jsonb_build_array(jsonb_build_
 SELECT :'created'::jsonb->'items'->0->>'item_id' AS item, :'created'::jsonb->'items'->0->>'version_id' AS blank \gset
 SELECT preparation.read_item(:'ws',:'item',NULL)->'version'->'payload' AS payload \gset
 SELECT preparation.save_items(:'ws',jsonb_build_array(jsonb_build_object('item_id',:'item','expected_version',:'blank',
- 'payload',jsonb_set(jsonb_set(:'payload'::jsonb,'{service}','{"name":"Sportello"}'),'{outcome}','"confirmed"'))),gen_random_uuid()) AS saved \gset
+ 'payload',jsonb_set(jsonb_set(:'payload'::jsonb,'{service}','{"name":"Sportello"}'),'{outcome}','"confirmed"')||
+ jsonb_build_object('schema_version',2,'source_facts',jsonb_build_array(jsonb_build_object('fact_id',gen_random_uuid(),'subject','service','kind','category_label','source_value','Sportello','value','Sportello')),
+ 'resolutions','[]'::jsonb,'evidence',jsonb_build_array(jsonb_build_object('id',gen_random_uuid(),'path','/source_facts/0/source_value','input_id',:'inp',
+ 'input_hash',encode(sha256(convert_to('Sportello','UTF8')),'hex'),'kind','stated','quote','Sportello','span',jsonb_build_object('start',0,'end',9)))))),gen_random_uuid()) AS saved \gset
 SELECT :'saved'::jsonb->'items'->0->>'after' AS expected \gset
 SELECT preparation.set_grant(:'ws',:'editor','edit',2,gen_random_uuid());
 COMMIT;
@@ -59,11 +62,44 @@ COMMIT;
 SQL
 wait "$EGI_SUBMIT_FIRST"
 if ! rg -q 'already_submitted' "$EGI_SUBMIT_TMP/second"; then cat "$EGI_SUBMIT_TMP/second"; exit 1; fi
+# Now both editors save the same v2 head: only the first corrected fact may win.
+"$PSQL" -X -At -v ON_ERROR_STOP=1 >"$EGI_SUBMIT_TMP/first" 2>&1 <<'SQL' &
+SET SESSION AUTHORIZATION egi_probe_submission_desk;
+BEGIN;
+SELECT access.verify_session(repeat('c',64));
+SELECT preparation.save_items(workspace,jsonb_build_array(jsonb_build_object('item_id',item,'expected_version',expected,'payload',
+ jsonb_set(jsonb_set(preparation.read_item(workspace,item,NULL)#>'{version,payload}','{source_facts,0,value}','"First correction"'),
+ '{field_origins}','{"/source_facts/0/value":{"state":"manual"}}'))),gen_random_uuid()) FROM preparation.contract_submission_race;
+SELECT pg_advisory_xact_lock(1162303812,106);
+SELECT pg_sleep(2);
+COMMIT;
+SQL
+EGI_SUBMIT_FIRST=$!
+EGI_SUBMIT_ATTEMPTS=0
+while [ "$("$PSQL" -X -At -c "SELECT count(*) FROM pg_locks WHERE locktype='advisory' AND classid=1162303812 AND objid=106 AND granted")" = 0 ]; do
+ EGI_SUBMIT_ATTEMPTS=$((EGI_SUBMIT_ATTEMPTS+1))
+ if [ "$EGI_SUBMIT_ATTEMPTS" -gt 50 ]; then echo 'Fact save lock not observed' >&2; exit 1; fi
+ sleep 0.1
+done
+if "$PSQL" -X -At -v ON_ERROR_STOP=1 >"$EGI_SUBMIT_TMP/second" 2>&1 <<'SQL'
+SET SESSION AUTHORIZATION egi_probe_submission_desk;
+BEGIN;
+SELECT access.verify_session(repeat('d',64));
+SELECT preparation.save_items(workspace,jsonb_build_array(jsonb_build_object('item_id',item,'expected_version',expected,'payload',
+ jsonb_set(jsonb_set(preparation.read_item(workspace,item,NULL)#>'{version,payload}','{source_facts,0,value}','"Second correction"'),
+ '{field_origins}','{"/source_facts/0/value":{"state":"manual"}}'))),gen_random_uuid()) FROM preparation.contract_submission_race;
+COMMIT;
+SQL
+then echo 'Concurrent stale v2 save unexpectedly succeeded' >&2; exit 1; fi
+wait "$EGI_SUBMIT_FIRST"
+if ! rg -q 'item_version_conflict' "$EGI_SUBMIT_TMP/second"; then cat "$EGI_SUBMIT_TMP/second"; exit 1; fi
 "$PSQL" -X -q -v ON_ERROR_STOP=1 <<'SQL'
 \ir tests/contract/helpers.sql
 SELECT pg_temp.assert_true((SELECT count(*) FROM editorial.community_snapshots)=1,'one snapshot under concurrent submission');
 SELECT pg_temp.assert_true((SELECT submitted_by=(SELECT owner FROM preparation.contract_submission_race) FROM editorial.community_snapshots),'first actor preserved');
 SELECT pg_temp.assert_true((SELECT count(*) FROM editorial.events WHERE action='submitted')=1,'one submitted event');
+SELECT pg_temp.assert_true((SELECT values#>>'{source_facts,0,value}'='Sportello' FROM editorial.community_snapshots),'immutable v2 snapshot keeps original fact');
+SELECT pg_temp.assert_true((SELECT payload#>>'{source_facts,0,value}'='First correction' FROM preparation.item_versions v JOIN preparation.items i ON i.current_version_id=v.id),'stale v2 editor cannot overwrite first correction');
 DROP TABLE preparation.contract_submission_race;
 TRUNCATE editorial.community_snapshots CASCADE;
 DELETE FROM editorial.events;

@@ -24,3 +24,4 @@
 020_community_acceptance [019_community_submissions] 2026-11-26T22:00:00Z Marco <mfederici@proton.me> # Canonical draft acceptance, selective assertions, stable identity and publication-source enforcement (EGI-106)
 021_community_component_evidence [020_community_acceptance] 2026-11-27T00:00:00Z Marco <mfederici@proton.me> # Preserve evidence across canonical component shifts
 022_community_evidence_context [021_community_component_evidence] 2026-11-27T00:01:00Z Marco <mfederici@proton.me> # Keep submitted component/interval evidence in context
+023_preparation_source_facts [022_community_evidence_context] 2026-11-27T09:00:00Z Marco <mfederici@proton.me> # Literal organization/category facts, v2 private versions and selective snapshots (EGI-114)
