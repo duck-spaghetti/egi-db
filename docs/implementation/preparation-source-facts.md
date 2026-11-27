@@ -1,0 +1,131 @@
+# Literal source facts — 023 / EGI-114
+
+The private item envelope now accepts version2 alongside version1. Canonical
+service/location bodies and public directory contracts do not change. No migration
+rewrites existing private versions or submitted snapshots. Only disposable native
+verification is authorized/applied; this change installs no login, provider or job.
+
+A v2 envelope adds required `source_facts` and `resolutions` arrays. Each fact has:
+
+- `fact_id`: a UUID bound to one private item, retained across versions/reordering;
+- `subject`: service or location;
+- `kind`: organization_name or category_label;
+- `source_value`: the retained literal spelling, immutable for this fact identity;
+- `value`: the currently edited value; absent only with an explicit cleared origin.
+
+Facts require exact retained-input evidence at `/source_facts/<index>/source_value`.
+The existing original-input hash, Unicode code-point spans, BOM/CRLF behavior and
+quote checks apply. The quote must include the literal claim. A changed value needs
+an explicit manual origin at `/source_facts/<index>/value`; clearing needs cleared.
+Original spelling/evidence remain separate and cannot be presented as proof of a
+corrected value. Array positions in evidence/origins must follow reordered facts;
+the save guard compares retained citations by fact identity, not old array position.
+
+`fact_identities` is a private identity register, indexed by item and keyed by fact
+UUID. It rejects reuse on another item/preparation or a different literal/kind/subject
+without scanning every historical JSON payload. Its input reference keeps source
+bytes available while private history needs them. It is removed with private-item
+retention; editorial snapshots retain their independent selective copy. No editorial,
+retention or worker login gets direct table access or helper execution.
+
+EGI-114 provides resolution slots, not reference matching. At this stage a resolution
+contains fact_id, state unresolved/ignored, empty context and empty candidates, with
+no selected target. Each fact has at most one slot. Proposed/confirmed references
+are refused (`reference_resolution_not_available`) until EGI-117 supplies contextual
+reference validation and explicit canonical acceptance. No organization/category ID
+can be smuggled into a literal fact. Existing canonical body reference validation
+still applies on submission; saving literal facts writes no canonical entity.
+
+## Versions, undo and submission
+
+Saving schema_version2 appends a new private version. An empty upgrade contains empty
+new arrays; it does not reconstruct source facts from canonical IDs or names. A v1
+write against a v2 head fails `item_schema_downgrade`, even with a fresh expected
+version. Stale versions retain the existing item_version_conflict response. Request
+receipts and workspace row locks remain authoritative.
+
+Undo appends a compensating version. Undoing an upgrade back to a pre-v2 state keeps
+the v2 envelope with empty new arrays; it cannot silently re-enable destructive old
+client writes. Existing v1 history and snapshots remain unchanged. Ordinary v1
+workspaces continue to use the unchanged baseline validation.
+
+Selective submission copies the current card's facts/origins/resolution slots and
+its relevant evidence. It never copies original bytes, unsent siblings, jobs or
+sharing history. Snapshot reads remain usable after private purge; the snapshot has
+no FK to the private identity register or retained inputs. No canonical acceptance
+of a literal unresolved fact is implied.
+
+Reverting023 refuses `source_facts_in_use` if any retained private version or submitted
+snapshot uses v2, including an empty upgraded version. Revert never deletes such
+history. Once no v2 data remains under the normal authorized lifecycle, the triplet
+restores the previous validator/save implementation and removes its private helpers.
+There is no downgrade/purge tool or automatic rewrite of editorial history.
+
+## Evidence on 2026-11-27
+
+Direct native PostgreSQL18/PostGIS deployment and structural verification passed on
+an isolated Unix-socket cluster. SQL contracts include v1 immutable snapshots, v2
+upgrade/replay/reopen, manual-origin checks, exact quotation validation, immutable
+fact identity, duplicate/foreign fact rejection, reorder, undo across the upgrade,
+old-client/stale-write failures and selective snapshots surviving private purge.
+The submission concurrency fixture now uses v2 and proves one snapshot/attribution,
+then two editors racing on one fact version leave only the first correction.
+
+The complete SQL contract set and existing canonical/budget/submission concurrency
+checks passed. Actual revert refused a retained v2 editorial snapshot; after removing
+only the disposable fixture snapshot, revert/redeploy and structural verify passed.
+The Sqitch CLI/registry was not exercised by these direct-psql checks (the existing
+local Sqitch runtime prerequisite remains unavailable). The configured disposable
+runner includes contract28 in both deploy cycles.
+
+A transaction-local synthetic measurement on the same cluster averaged0.243ms for
+20 v1 saves and0.462ms for20 two-fact v2 saves; one1,000-fact save took592.64ms.
+These are warm database-function timings, not HTTP latency, percentile guarantees or
+production capacity. Reproduce the optional measurement with psql variable
+`measure_facts=1` on contract28; fixture values are synthetic. `keep_facts=1` retains
+test data only for the disposable rollback-refusal check. Do not use either option
+on a populated database. Final integrated performance and independent review remain
+part of the whole milestone.
+
+## Job/candidate propagation — 024 / EGI-114 provider completion
+
+An immutable AI configuration may explicitly select interpretation_version2 in its
+provider_config; absence means1 for existing configurations/jobs. Result versions
+must match that frozen configuration. Reuse/cache remains keyed by config_version,
+input and eligible payload, so a new protocol requires a new configuration version.
+No configuration is seeded/enabled and no provider call is made by this migration.
+
+The v2 result adds per-candidate source_facts using local fact_key rather than UUID.
+Closed validation rejects provider-owned IDs/roles or selected relationships and
+checks every literal fact's exact original evidence. The baseline result validator
+also rechecks every quote against eligible/redacted text, through a temporary v1
+validation proxy; this proxy is never stored or materialized. Duplicate evidence
+identities across candidates and mixed protocol versions fail before persistence.
+
+Candidate selection allocates actual private fact UUIDs and evidence identities in
+the existing expected-version operation. Request/candidate replay returns the same
+materialized versions. A subsequent candidate can reuse a fact only with its typed
+literal and exact source input/hash/span/quote, at most once per incoming fact.
+Similarity of names alone is never sufficient. Two identical claims in one incoming
+candidate remain separate identities; no canonical entity is created or merged.
+
+Old facts remain preserved, including manual corrections/clears and resolution
+slots. A same-locator refresh preserves their identity/current value and reports
+manual/cleared values as visible conflicts. New or ambiguous-locator claims append
+as separate unresolved facts for operator review; they never silently replace an
+old claim based on spelling. Existing maximum fact/payload bounds still apply. A
+pending v1 job can update untouched ordinary fields on a v2 card without deleting
+its source facts. Canonical body merge rules and source/context/ACL checks remain.
+
+Revert024 refuses fact_candidate_protocol_in_use while a v2 configuration or v2
+stored job output remains. Revert in dependency order (024 before023); neither
+triplet deletes data or rewrites configuration/history to make rollback succeed.
+
+Contract29 reuses the complete contract20 job/ledger/redaction/selection lifecycle
+with v2 instead of duplicating a fixture engine. It checks server identity assignment,
+manual value/identity preservation on refresh, rejection of guessed protected text,
+forged fact IDs, mixed versions and borrowed citation IDs. The complete28 SQL
+contracts and three concurrency journeys pass. Actual024 rollback refusal for a v2
+configuration,023 refusal for a retained snapshot, safe revert/redeploy and both
+structural verifies pass through direct psql on a new isolated cluster. The unchanged
+Sqitch CLI prerequisite/whole-milestone review limitations still apply.

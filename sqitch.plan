@@ -11,3 +11,31 @@
 007_linked_supplements [006_hardening] 2026-11-22T23:10:00Z Marco <marco@egi.invalid> # Approved linked-source contacts and access fragments only
 008_contact_aliases [007_linked_supplements] 2026-11-23T00:30:00Z Marco <marco@egi.invalid> # Private compound contacts protect every interpreted terminal alternative
 009_contact_protection_register [008_contact_aliases] 2026-11-23T20:00:00Z Marco <mfederici@proton.me> # Persistent private-contact restrictions, same-service scope and explicit moderated resolution
+010_access [009_contact_protection_register] 2026-11-25T23:00:00Z Marco <mfederici@proton.me> # Moderator accounts, invitations and sessions verified by the database behind one editorial login (EGI-81)
+011_editorial [010_access] 2026-11-25T23:30:00Z Marco <mfederici@proton.me> # Private visitor contributions: intake limits, claims, decisions, outcomes and retention (EGI-82)
+012_revision_body [011_editorial] 2026-11-26T10:00:00Z Marco <mfederici@proton.me> # Read a revision back as the body save_revision takes, for moderator edits (EGI-83)
+013_editorial_observations [012_revision_body] 2026-11-26T14:00:00Z Marco <mfederici@proton.me> # Moderator observations as an accountable source, so created services and locations cite evidence (EGI-84)
+014_preparations [013_editorial_observations] 2026-11-26T17:00:00Z Marco <mfederici@proton.me> # Private source text, shared preparations and immutable editable card versions (EGI-100)
+015_preparation_history [014_preparations] 2026-11-26T17:30:00Z Marco <mfederici@proton.me> # Compensating undo, paginated history and private trash retention (EGI-101)
+016_community_sources [015_preparation_history] 2026-11-26T18:00:00Z Marco <mfederici@proton.me> # Attributed source registration and immutable Admin admission (EGI-102)
+017_preparation_jobs [016_community_sources] 2026-11-26T18:30:00Z Marco <mfederici@proton.me> # One-dispatch AI leases, eligible payloads and atomic monthly cost reservations (EGI-103)
+018_preparation_candidates [017_preparation_jobs] 2026-11-26T18:31:00Z Marco <mfederici@proton.me> # Select job candidates and preserve manual/cleared fields on explicit updates (EGI-103 provider completion)
+019_community_submissions [018_preparation_candidates] 2026-11-26T21:30:00Z Marco <mfederici@proton.me> # Attributed immutable selected-card submissions and selective editorial evidence (EGI-105)
+020_community_acceptance [019_community_submissions] 2026-11-26T22:00:00Z Marco <mfederici@proton.me> # Canonical draft acceptance, selective assertions, stable identity and publication-source enforcement (EGI-106)
+021_community_component_evidence [020_community_acceptance] 2026-11-27T00:00:00Z Marco <mfederici@proton.me> # Preserve evidence across canonical component shifts
+022_community_evidence_context [021_community_component_evidence] 2026-11-27T00:01:00Z Marco <mfederici@proton.me> # Keep submitted component/interval evidence in context
+023_preparation_source_facts [022_community_evidence_context] 2026-11-27T09:00:00Z Marco <mfederici@proton.me> # Literal organization/category facts, v2 private versions and selective snapshots (EGI-114)
+024_preparation_fact_candidates [023_preparation_source_facts] 2026-11-27T10:00:00Z Marco <mfederici@proton.me> # Bind v2 job candidates to stable private source facts (EGI-114 provider completion)
+025_preparation_reference_catalog [024_preparation_fact_candidates] 2026-11-27T11:00:00Z Marco <mfederici@proton.me> # Authorized catalog context and operator-bound reference choices (EGI-117)
+026_community_reference_acceptance [025_preparation_reference_catalog] 2026-11-27T11:01:00Z Marco <mfederici@proton.me> # Atomic explicit organization/category acceptance (EGI-117)
+027_preparation_category_matches [026_community_reference_acceptance] 2026-11-27T12:00:00Z Marco <mfederici@proton.me> # Frozen public category context and unconfirmed worker suggestions (EGI-117 provider completion)
+028_preparation_reference_lookup [027_preparation_category_matches] 2026-11-27T12:01:00Z Marco <mfederici@proton.me> # Bounded authorized names for selected organization IDs (EGI-117 consumer handoff)
+029_preparation_resolution_undo [028_preparation_reference_lookup] 2026-11-27T12:02:00Z Marco <mfederici@proton.me> # Compensating undo invalidates stale restored mappings (EGI-117 final review)
+030_preparation_interpretations [029_preparation_resolution_undo] 2026-11-27T18:00:00Z Marco <mfederici@proton.me> # Versioned interpreted categories and separately verified hypotheses (EGI-146)
+031_workbench_plans [030_preparation_interpretations] 2026-11-27T18:01:00Z Marco <mfederici@proton.me> # Frozen bounded analysis plans and shared packet context (EGI-147)
+032_workbench_coverage [031_workbench_plans] 2026-11-27T18:02:00Z Marco <mfederici@proton.me> # Durable unit outcomes and separate record/comparison coverage (EGI-148)
+033_private_groups [032_workbench_coverage] 2026-11-27T18:03:00Z Marco <mfederici@proton.me> # Private versioned group review, partial apply and compensation (EGI-149)
+034_workbench_context [033_private_groups] 2026-11-27T18:04:00Z Marco <mfederici@proton.me> # Complete interpreted contextual input and conservative framing bounds (EGI-147)
+035_interpretation_verification [034_workbench_context] 2026-11-27T18:05:00Z Marco <mfederici@proton.me> # Preserve exact interpretation support and independent hypothesis verification (EGI-146)
+036_workbench_supports [035_interpretation_verification] 2026-11-27T18:06:00Z Marco <mfederici@proton.me> # Scope semantic support, retry lineage and proposal/member readers (EGI-148/149)
+037_workbench_workflow [036_workbench_supports] 2026-11-27T18:07:00Z Marco <mfederici@proton.me> # Explicit task selection, all-task lifecycle and attributable abstention (EGI-147/148)

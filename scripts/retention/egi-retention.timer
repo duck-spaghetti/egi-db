@@ -1,0 +1,10 @@
+# Runs egi-retention.service every night; Persistent catches up after downtime.
+[Unit]
+Description=EGI contribution retention, nightly
+
+[Timer]
+OnCalendar=*-*-* 03:30:00
+Persistent=true
+
+[Install]
+WantedBy=timers.target

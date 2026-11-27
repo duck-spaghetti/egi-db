@@ -1,5 +1,9 @@
 sqitch.local.conf
 .env
 .scratch/
+.local/
 *.log
 .DS_Store
+
+.local/
+__pycache__/
