@@ -3,3 +3,6 @@ sqitch.local.conf
 .scratch/
 *.log
 .DS_Store
+
+.local/
+__pycache__/
