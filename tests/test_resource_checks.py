@@ -42,6 +42,30 @@ with patch('devchecks.resources.preflight',side_effect=PrerequisiteError('contro
         self.assertEqual(result.returncode, 2)
         self.assertEqual(json.loads(result.stdout)['status'], 'blocked')
 
+    def test_shutdown_failure_cannot_pass_the_owning_profile(self):
+        """A failed supervised stage stays failed at the command consumed by CI."""
+        code = '''from pathlib import Path
+import sys
+from unittest.mock import patch
+sys.path.insert(0,'scripts')
+from devtools_source import source
+source(Path.cwd())
+from devchecks.report import Check
+import importlib.util
+spec=importlib.util.spec_from_file_location('database_checks',Path.cwd()/'scripts/check.py')
+m=importlib.util.module_from_spec(spec);spec.loader.exec_module(m)
+def stage(name,*args,**kwargs):
+    return Check(name,'failed' if name=='native-plan-contracts' else 'passed','controlled shutdown failure')
+with patch('devchecks.resources.run_check',side_effect=stage):
+    raise SystemExit(m.main(['--profile','complete','--json']))
+'''
+        result = subprocess.run([sys.executable, '-c', code], cwd=ROOT, capture_output=True, text=True)
+        self.assertEqual(result.returncode, 1, result.stderr)
+        report = json.loads(result.stdout)
+        self.assertEqual(report['status'], 'failed')
+        self.assertTrue(any(item['name'] == 'native-plan-contracts' and item['status'] == 'failed'
+                            for item in report['checks']))
+
     def test_hook_git_environment_cannot_redirect_provider(self):
         """Inherited Git hook variables cannot make pin verification read another repository."""
         actual = subprocess.check_output(['git','rev-parse','--absolute-git-dir'],cwd=ROOT,text=True).strip()

@@ -40,6 +40,9 @@ def main(argv=None):
             result = report('database', args.profile, root, checks)
             print(json.dumps(result, indent=2))
             return exit_code(result)
+        checks.append(run('resource-command-regressions',
+                          [sys.executable, '-m', 'unittest', 'discover', '-s', 'tests', '-p', 'test_*.py', '-v'],
+                          root, timeout=120))
         native = run("native-plan-contracts", [sys.executable, root / "scripts/native_disposable.py"], root, timeout=600)
         if native.status == "passed":
             native.reason = "Actual isolated SQL/concurrency/revert/redeploy; .local/native-last.log"
