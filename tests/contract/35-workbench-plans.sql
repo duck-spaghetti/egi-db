@@ -52,7 +52,7 @@ SELECT preparation.preview_analysis_plan(:'ws',:'independent_cards','workbench-f
 SELECT pg_temp.assert_true((:'packed_plan'::jsonb->>'total_packets')::integer=1 AND jsonb_array_length(:'packed_plan'::jsonb#>'{packets,0,required_record_ids}')=3,'multiple independent records share one bounded request');
 RESET SESSION AUTHORIZATION;
 INSERT INTO preparation.ai_configurations(version,provider_config,max_input_tokens,max_output_tokens,input_rate_microusd_per_million,cached_rate_microusd_per_million,output_rate_microusd_per_million,verified_at,price_reference)
- VALUES('workbench-fixture-2',jsonb_build_object('fixture_only',true,'interpretation_version',2,'catalog_context',:'context'::jsonb),100000,4500,1000,0,1000,clock_timestamp(),'synthetic, no provider');
+ VALUES('workbench-fixture-2',jsonb_build_object('fixture_only',true,'interpretation_version',2,'catalog_context',:'context'::jsonb),100000,(SELECT max(jsonb_array_length(u->'basis_keys'))*1024 FROM preparation.analysis_packets a,jsonb_array_elements(a.data->'units') u WHERE a.plan_id=(:'packed_plan'::jsonb->>'plan_id')::uuid),1000,0,1000,clock_timestamp(),'synthetic, no provider');
 UPDATE preparation.ai_settings SET config_version='workbench-fixture-2';
 SET SESSION AUTHORIZATION egi_probe30;
 SELECT preparation.preview_analysis_plan(:'ws',:'independent_cards','workbench-fixture-2',:'limits',gen_random_uuid()) AS split_plan \gset
