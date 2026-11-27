@@ -38,7 +38,7 @@ jobs:
           sudo curl --fail --silent --show-error -o /usr/share/postgresql-common/pgdg/apt.postgresql.org.asc https://www.postgresql.org/media/keys/ACCC4CF8.asc
           echo 'deb [signed-by=/usr/share/postgresql-common/pgdg/apt.postgresql.org.asc] https://apt.postgresql.org/pub/repos/apt noble-pgdg main' | sudo tee /etc/apt/sources.list.d/pgdg.list
           sudo apt-get update -qq
-          sudo apt-get install -y postgresql-18 postgresql-18-postgis-3 sqitch libdbd-pg-perl
+          sudo apt-get install -y postgresql-18 postgresql-18-postgis-3 sqitch libdbd-pg-perl ripgrep
           sudo install -d -m 1777 /private/tmp
           echo 'EGI_PG_BIN=/usr/lib/postgresql/18/bin' >> "$GITHUB_ENV"
           echo 'EGI_SQITCH=/usr/bin/sqitch' >> "$GITHUB_ENV"
