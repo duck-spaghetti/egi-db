@@ -25,16 +25,14 @@ import importlib.util
 spec=importlib.util.spec_from_file_location('database_checks',Path.cwd()/'scripts/check.py')
 m=importlib.util.module_from_spec(spec);spec.loader.exec_module(m)
 main=m.main
-with patch('devchecks.resources.preflight',side_effect=PrerequisiteError('controlled below15 GiB')):
+with patch('devchecks.resources.preflight',side_effect=PrerequisiteError('controlled below15 GiB')), patch('devchecks.resources.ResourceRun.__init__',side_effect=AssertionError('must not allocate')):
     raise SystemExit(main(['--profile','complete','--json']))
 '''
-        before = set(Path('/private/tmp').glob('egi-resource-*'))
         result = subprocess.run([sys.executable, '-c', code], cwd=ROOT, capture_output=True, text=True)
         self.assertEqual(result.returncode, 2, result.stderr)
         report = json.loads(result.stdout)
         self.assertEqual(report['status'], 'blocked')
         self.assertEqual([x['name'] for x in report['checks']], ['plan-triplets', 'resource-preflight'])
-        self.assertEqual(set(Path('/private/tmp').glob('egi-resource-*')) - before, set())
 
     def test_missing_provider_is_blocked(self):
         """An absent identified checkout never falls back to an unverified module."""
