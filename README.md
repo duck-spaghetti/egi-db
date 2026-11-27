@@ -145,3 +145,8 @@ decisions, source attribution, publication and rollback boundaries.
 public category context in immutable configuration, current pre-dispatch checks,
 conditional supplied-key matches and stable unconfirmed resolutions. Existing
 context-free protocols remain compatible; no configuration/provider call is seeded.
+
+
+`029_preparation_resolution_undo` restores literal corrections without reviving
+stale reference decisions. Contract33 covers mapped-value undo and stable replay;
+see [reference resolution](docs/implementation/reference-resolution.md).

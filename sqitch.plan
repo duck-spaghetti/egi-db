@@ -30,3 +30,4 @@
 026_community_reference_acceptance [025_preparation_reference_catalog] 2026-11-27T11:01:00Z Marco <mfederici@proton.me> # Atomic explicit organization/category acceptance (EGI-117)
 027_preparation_category_matches [026_community_reference_acceptance] 2026-11-27T12:00:00Z Marco <mfederici@proton.me> # Frozen public category context and unconfirmed worker suggestions (EGI-117 provider completion)
 028_preparation_reference_lookup [027_preparation_category_matches] 2026-11-27T12:01:00Z Marco <mfederici@proton.me> # Bounded authorized names for selected organization IDs (EGI-117 consumer handoff)
+029_preparation_resolution_undo [028_preparation_reference_lookup] 2026-11-27T12:02:00Z Marco <mfederici@proton.me> # Compensating undo invalidates stale restored mappings (EGI-117 final review)

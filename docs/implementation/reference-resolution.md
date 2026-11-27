@@ -156,3 +156,18 @@ one HTTP request per fact or copying display labels into authoritative selection
 The filter has no write/retention effect; reverting it restores the earlier query
 shape without deleting data. Native HTTP tests cover selected-ID lookup, scope and
 an oversized batch; ordered028→027→026→025 native rollback/redeploy is verified.
+
+
+## Undo compensation — change029
+
+An undo restores historical source-fact values by stable fact ID. It does not revive
+an old mapping against a changed literal or stale catalog head. The confirmation
+trigger clears those restored proposed/confirmed resolutions to unresolved before
+normal validation; unchanged valid references are still validated against the
+current catalog. Historical versions and submitted snapshots remain immutable.
+Ordinary saves still reject a changed literal carrying its earlier selection.
+Contract33 proves confirmed/proposed correction→undo, valid proposal restoration,
+stale-head invalidation and replay. The test fails with the pre029 trigger and passes
+with029. The full native suite includes31 SQL contracts, four concurrent journeys
+and ordered029→028→027→026→025 revert/redeploy on disposable databases. Verification
+uses native psql; it does not claim a working local Sqitch CLI/registry.
