@@ -1,3 +1,7 @@
+\if :{?facts_protocol}
+\else
+\set facts_protocol 1
+\endif
 -- EGI-100: private preparation access matrix, retained bytes, CAS and replay.
 -- Synthetic accounts and data only; each verified actor has its own transaction.
 \ir helpers.sql
@@ -16,7 +20,7 @@ CREATE ROLE egi_probe_jobs_worker2 LOGIN IN ROLE egi_preparation_worker;
 CREATE ROLE egi_probe_jobs_retention LOGIN IN ROLE egi_retention;
 INSERT INTO preparation.ai_configurations(version,provider_config,max_input_tokens,max_output_tokens,
  input_rate_microusd_per_million,cached_rate_microusd_per_million,output_rate_microusd_per_million,verified_at,price_reference)
- VALUES('fixture-no-provider','{"fixture_only":true}',3000000,3000000,1000000,500000,1000000,clock_timestamp(),'synthetic fixture, no provider');
+ VALUES('fixture-no-provider',jsonb_build_object('fixture_only',true,'interpretation_version',:facts_protocol),3000000,3000000,1000000,500000,1000000,clock_timestamp(),'synthetic fixture, no provider');
 SET SESSION AUTHORIZATION egi_probe_preparation;
 BEGIN;
 SELECT access.verify_session(encode(sha256(convert_to('prep-owner','UTF8')),'hex'));
@@ -75,7 +79,26 @@ SELECT jsonb_set(:'result'::jsonb,'{candidates}',(:'result'::jsonb->'candidates'
  'location',jsonb_build_object('kind','none'),'diagnostics','[]'::jsonb,'evidence',
  (:'result'::jsonb#>'{candidates,0,evidence}')||jsonb_build_array(jsonb_set(jsonb_set(:'result'::jsonb#>'{candidates,0,evidence,0}',
  '{path}','"/service/description"'),'{id}',to_jsonb(gen_random_uuid())))))) AS result \gset
+SELECT (:facts_protocol=2) AS facts_v2 \gset
+\if :facts_v2
+SELECT jsonb_set(jsonb_set(:'result'::jsonb,'{schema_version}','2'),'{candidates}',(
+ SELECT jsonb_agg(c||jsonb_build_object('source_facts',jsonb_build_array(jsonb_build_object('fact_key','source-label','subject','service','kind','category_label','source_value','Sportello')),
+ 'evidence',(SELECT jsonb_agg(jsonb_set(e,'{id}',to_jsonb(gen_random_uuid()))) FROM jsonb_array_elements(c->'evidence') e)||
+ jsonb_build_array(jsonb_build_object('id',gen_random_uuid(),'path','/source_facts/0/source_value','input_id',:'inp',
+ 'input_hash',:'claim2'::jsonb#>>'{eligible_payload,input_hash}','kind','stated','quote','Sportello','span',jsonb_build_object('start',0,'end',9)))))
+ FROM jsonb_array_elements(:'result'::jsonb->'candidates') c)) AS result \gset
+\endif
 SELECT '{"input_tokens":100,"output_tokens":50,"cached_input_tokens":0}' AS usage \gset
+\if :facts_v2
+RESET SESSION AUTHORIZATION;
+SELECT pg_temp.expect_error(format('SELECT preparation.validate_job_result((SELECT j FROM preparation.jobs j WHERE id=%L),%L)',:'job',jsonb_set(:'result'::jsonb,'{schema_version}','1')),'22023','interpretation_version_conflict');
+SELECT pg_temp.expect_error(format('SELECT preparation.validate_job_result((SELECT j FROM preparation.jobs j WHERE id=%L),%L)',:'job',jsonb_set(:'result'::jsonb,'{candidates,0,source_facts,0,fact_id}',to_jsonb(gen_random_uuid()))),'22023');
+SELECT jsonb_set(jsonb_set(jsonb_set(jsonb_set(:'result'::jsonb,'{candidates,0,source_facts,0,source_value}',to_jsonb('06'||chr(160)||'1234567')),
+ '{candidates,0,evidence,1,quote}',to_jsonb('06'||chr(160)||'1234567')),'{candidates,0,evidence,1,span,start}','10'),'{candidates,0,evidence,1,span,end}','20') AS protected_fact \gset
+SELECT pg_temp.expect_error(format('SELECT preparation.validate_job_result((SELECT j FROM preparation.jobs j WHERE id=%L),%L)',:'job',:'protected_fact'),'22023','invalid_interpretation_evidence');
+SELECT pg_temp.expect_error(format('SELECT preparation.validate_job_result((SELECT j FROM preparation.jobs j WHERE id=%L),%L)',:'job',jsonb_set(:'result'::jsonb,'{candidates,1,evidence,0,id}',:'result'::jsonb#>'{candidates,0,evidence,0,id}')),'22023','duplicate_candidate_evidence_id');
+SET SESSION AUTHORIZATION egi_probe_jobs_worker2;
+\endif
 SELECT pg_temp.assert_true(preparation.finish_job(:'job',:'dispatch',:'lease2',:'result',:'usage')->>'state'='succeeded','verified result succeeds');
 SELECT pg_temp.assert_true((preparation.finish_job(:'job',:'dispatch',:'lease2',:'result',:'usage')->>'settled')::boolean,'completion replay');
 SELECT pg_temp.expect_error(format('SELECT preparation.finish_job(%L,%L,%L,%L,%L)',:'job',:'dispatch',:'lease2',:'result','{"input_tokens":101,"output_tokens":50,"cached_input_tokens":0}'),'40001','job_completion_conflict');
@@ -90,9 +113,17 @@ SELECT preparation.create_items(:'ws',:'inp',:'job',jsonb_build_array(jsonb_buil
 SELECT :'selection_result'::jsonb->'items'->0->>'item_id' AS selected_card, :'selection_result'::jsonb->'items'->0->>'version_id' AS selected_v1 \gset
 SELECT pg_temp.assert_true(preparation.read_item(:'ws',:'selected_card',NULL)#>>'{version,payload,service,name}'='Sportello','selected candidate becomes editable private card');
 SELECT preparation.read_item(:'ws',:'selected_card',NULL)->'version'->'payload' AS selected_payload \gset
+SELECT (:facts_protocol=2) AS facts_v2 \gset
+\if :facts_v2
+SELECT pg_temp.assert_true(:'selected_payload'::jsonb#>>'{source_facts,0,source_value}'='Sportello','v2 job literal materialized');
+SELECT :'selected_payload'::jsonb#>>'{source_facts,0,fact_id}' AS retained_fact_id \gset
+SELECT jsonb_set(jsonb_set(:'selected_payload'::jsonb,'{source_facts,0,value}','"Manual label"'),'{field_origins}',
+ (:'selected_payload'::jsonb->'field_origins')||'{"/source_facts/0/value":{"state":"manual"}}') AS selected_payload \gset
+\endif
 SELECT preparation.save_items(:'ws',jsonb_build_array(jsonb_build_object('item_id',:'selected_card','expected_version',:'selected_v1',
- 'payload',jsonb_set(jsonb_set(jsonb_set(:'selected_payload'::jsonb,'{service,name}','"Manual correction"'),'{evidence}','[]'),
- '{field_origins}',jsonb_build_object('/service/name',jsonb_build_object('state','manual'),'/service/description',jsonb_build_object('state','cleared'))))),gen_random_uuid());
+ 'payload',jsonb_set(jsonb_set(jsonb_set(:'selected_payload'::jsonb,'{service,name}','"Manual correction"'),'{evidence}',
+ COALESCE((SELECT jsonb_agg(e) FROM jsonb_array_elements(:'selected_payload'::jsonb->'evidence') e WHERE starts_with(e->>'path','/source_facts/')),'[]'::jsonb)),
+ '{field_origins}',(:'selected_payload'::jsonb->'field_origins')||jsonb_build_object('/service/name',jsonb_build_object('state','manual'),'/service/description',jsonb_build_object('state','cleared'))))),gen_random_uuid());
 SELECT preparation.create_items(:'ws',:'inp',:'job',jsonb_build_array(jsonb_build_object('candidate_id',:'cid')),gen_random_uuid());
 SELECT pg_temp.assert_true(preparation.read_item(:'ws',:'selected_card',NULL)#>>'{version,payload,service,name}'='Manual correction','repeated candidate selection never overwrites later manual edits');
 SELECT preparation.read_job(:'ws',:'job')->'candidate_ids'->>'desk-update' AS update_cid \gset
@@ -102,7 +133,12 @@ SELECT preparation.create_items(:'ws',:'inp',:'job',jsonb_build_array(jsonb_buil
 SELECT pg_temp.assert_true(preparation.read_item(:'ws',:'selected_card',NULL)#>>'{version,payload,service,name}'='Manual correction'
  AND NOT (preparation.read_item(:'ws',:'selected_card',NULL)#>'{version,payload,service}') ? 'description'
  AND preparation.read_item(:'ws',:'selected_card',NULL)#>>'{version,payload,service,original_language}'='it','explicit update preserves manual and cleared fields, applies untouched fields');
-SELECT pg_temp.assert_true(jsonb_array_length(:'updated_selection'::jsonb#>'{items,0,conflicts}')=2,'preserved fields returned as visible conflicts');
+SELECT pg_temp.assert_true(jsonb_array_length(:'updated_selection'::jsonb#>'{items,0,conflicts}')=(CASE :facts_protocol WHEN 2 THEN 3 ELSE 2 END),'preserved fields returned as visible conflicts');
+\if :facts_v2
+SELECT pg_temp.assert_true(preparation.read_item(:'ws',:'selected_card',NULL)#>>'{version,payload,source_facts,0,fact_id}'=:'retained_fact_id'
+ AND preparation.read_item(:'ws',:'selected_card',NULL)#>>'{version,payload,source_facts,0,value}'='Manual label'
+ AND jsonb_array_length(preparation.read_item(:'ws',:'selected_card',NULL)#>'{version,payload,source_facts}')=1,'manual fact and identity survive explicit same-input update');
+\endif
 SELECT preparation.put_input(:'ws',2,'text',convert_to('Second input','UTF8'),'true',gen_random_uuid())->>'input_id' AS inp2 \gset
 SELECT preparation.request_interpretation(:'ws',:'inp2','extract_text',gen_random_uuid())->>'job_id' AS job2 \gset
 COMMIT;

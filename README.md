@@ -129,3 +129,8 @@ and selective snapshots remain immutable; old writes cannot drop v2 facts. See
 [the version/evidence/lifecycle contract](docs/implementation/preparation-source-facts.md).
 Only disposable verification has been performed; matching and entity acceptance
 follow in EGI-117 and the remaining approved Community tickets.
+
+`024_preparation_fact_candidates` completes EGI-114's provider seam: an explicit
+immutable v2 job configuration, original/eligible quotation checks and candidate
+materialization with stable private fact IDs. Existing v1 jobs remain compatible;
+no model configuration or call is seeded. See the same source-fact contract.

@@ -86,3 +86,46 @@ production capacity. Reproduce the optional measurement with psql variable
 test data only for the disposable rollback-refusal check. Do not use either option
 on a populated database. Final integrated performance and independent review remain
 part of the whole milestone.
+
+## Job/candidate propagation — 024 / EGI-114 provider completion
+
+An immutable AI configuration may explicitly select interpretation_version2 in its
+provider_config; absence means1 for existing configurations/jobs. Result versions
+must match that frozen configuration. Reuse/cache remains keyed by config_version,
+input and eligible payload, so a new protocol requires a new configuration version.
+No configuration is seeded/enabled and no provider call is made by this migration.
+
+The v2 result adds per-candidate source_facts using local fact_key rather than UUID.
+Closed validation rejects provider-owned IDs/roles or selected relationships and
+checks every literal fact's exact original evidence. The baseline result validator
+also rechecks every quote against eligible/redacted text, through a temporary v1
+validation proxy; this proxy is never stored or materialized. Duplicate evidence
+identities across candidates and mixed protocol versions fail before persistence.
+
+Candidate selection allocates actual private fact UUIDs and evidence identities in
+the existing expected-version operation. Request/candidate replay returns the same
+materialized versions. A subsequent candidate can reuse a fact only with its typed
+literal and exact source input/hash/span/quote, at most once per incoming fact.
+Similarity of names alone is never sufficient. Two identical claims in one incoming
+candidate remain separate identities; no canonical entity is created or merged.
+
+Old facts remain preserved, including manual corrections/clears and resolution
+slots. A same-locator refresh preserves their identity/current value and reports
+manual/cleared values as visible conflicts. New or ambiguous-locator claims append
+as separate unresolved facts for operator review; they never silently replace an
+old claim based on spelling. Existing maximum fact/payload bounds still apply. A
+pending v1 job can update untouched ordinary fields on a v2 card without deleting
+its source facts. Canonical body merge rules and source/context/ACL checks remain.
+
+Revert024 refuses fact_candidate_protocol_in_use while a v2 configuration or v2
+stored job output remains. Revert in dependency order (024 before023); neither
+triplet deletes data or rewrites configuration/history to make rollback succeed.
+
+Contract29 reuses the complete contract20 job/ledger/redaction/selection lifecycle
+with v2 instead of duplicating a fixture engine. It checks server identity assignment,
+manual value/identity preservation on refresh, rejection of guessed protected text,
+forged fact IDs, mixed versions and borrowed citation IDs. The complete28 SQL
+contracts and three concurrency journeys pass. Actual024 rollback refusal for a v2
+configuration,023 refusal for a retained snapshot, safe revert/redeploy and both
+structural verifies pass through direct psql on a new isolated cluster. The unchanged
+Sqitch CLI prerequisite/whole-milestone review limitations still apply.

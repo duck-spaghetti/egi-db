@@ -147,3 +147,11 @@ Self-review covered worker role/lease authority, lock order, integer accounting,
 privacy/redaction, immutable configuration, cancellation/retention and candidate
 CAS/idempotence/manual-field preservation. Independent combined review and human
 acceptance remain pending; no real OpenAI request was executed.
+
+## Literal organization/category candidates — 024
+
+The [v2 fact adapter](preparation-source-facts.md#jobcandidate-propagation--024--egi-114-provider-completion)
+adds explicit interpretation_version configuration, matching result validation and
+stable private fact materialization. Existing jobs/configurations default to1;
+source facts survive v2/manual refresh and older v1 results. The persistent job,
+one-dispatch lease, budget, redaction and candidate-selection operations are reused.
