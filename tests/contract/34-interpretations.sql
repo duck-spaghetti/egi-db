@@ -57,4 +57,7 @@ END $$;
 SET SESSION AUTHORIZATION egi_probe30;
 SELECT pg_temp.check_interpretations(:'ws',:'item');
 RESET SESSION AUTHORIZATION;
+\if :{?keep_interpretation_transaction}
+\else
 ROLLBACK;
+\endif

@@ -40,3 +40,18 @@ exercises private saves and selected moderation with actual PostgreSQL sessions.
 Rollback is structural and destructive to the new private identity registry:
 revert030 only after preserving or explicitly retiring v3 private data and their
 snapshots. Normal undo uses immutable compensating item versions, not Sqitch revert.
+
+Migration 035 tightens independent hypothesis proof: changing a quotation's UUID or
+field path does not make the same input/hash/span/quote independent verification.
+Compensating a v1-to-v3 upgrade supplies the required empty v2 arrays and stays v3.
+Source-fact initial manual origins do not invalidate the immutable unchanged raw
+value; effective corrected/cleared values and changed fact identity do invalidate
+its interpretation. Actual candidate source quotes may come from other fields of
+the same anchored card version. Changing those supporting fields also stales the
+decision. Selective snapshots retain the exact candidate quotation IDs and only
+that selected card's referenced weak metadata, with origin=source_metadata.
+
+Association insertion happens on a fresh deliberate confirmation. A manual removal
+of a confirmed category resets the echoed private selection to proposed/null; an
+unrelated later save cannot restore it. Fresh human confirmation may reselect it.
+Immutable previous versions and already-sent snapshots retain the earlier decision.

@@ -36,3 +36,4 @@
 032_workbench_coverage [031_workbench_plans] 2026-11-27T18:02:00Z Marco <mfederici@proton.me> # Durable unit outcomes and separate record/comparison coverage (EGI-148)
 033_private_groups [032_workbench_coverage] 2026-11-27T18:03:00Z Marco <mfederici@proton.me> # Private versioned group review, partial apply and compensation (EGI-149)
 034_workbench_context [033_private_groups] 2026-11-27T18:04:00Z Marco <mfederici@proton.me> # Complete interpreted contextual input and conservative framing bounds (EGI-147)
+035_interpretation_verification [034_workbench_context] 2026-11-27T18:05:00Z Marco <mfederici@proton.me> # Preserve exact interpretation support and independent hypothesis verification (EGI-146)
