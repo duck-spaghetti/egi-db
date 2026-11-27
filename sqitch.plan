@@ -33,3 +33,4 @@
 029_preparation_resolution_undo [028_preparation_reference_lookup] 2026-11-27T12:02:00Z Marco <mfederici@proton.me> # Compensating undo invalidates stale restored mappings (EGI-117 final review)
 030_preparation_interpretations [029_preparation_resolution_undo] 2026-11-27T18:00:00Z Marco <mfederici@proton.me> # Versioned interpreted categories and separately verified hypotheses (EGI-146)
 031_workbench_plans [030_preparation_interpretations] 2026-11-27T18:01:00Z Marco <mfederici@proton.me> # Frozen bounded analysis plans and shared packet context (EGI-147)
+032_workbench_coverage [031_workbench_plans] 2026-11-27T18:02:00Z Marco <mfederici@proton.me> # Durable unit outcomes and separate record/comparison coverage (EGI-148)

@@ -62,6 +62,8 @@ RESET SESSION AUTHORIZATION;
 SELECT pg_temp.expect_error('UPDATE preparation.analysis_plans SET snapshot_key=''changed''','55000');
 SELECT pg_temp.expect_error('DELETE FROM preparation.plan_events','55000');
 CREATE ROLE egi_probe35_retention LOGIN IN ROLE egi_retention;
+\if :{?keep_workbench_transaction}
+\else
 SET SESSION AUTHORIZATION egi_probe35_retention;
 SELECT pg_temp.expect_error(format('SELECT preparation.purge_job_payloads(%L)',:'ws'),'42501');
 RESET SESSION AUTHORIZATION;
@@ -71,3 +73,4 @@ SELECT preparation.purge_trash();
 RESET SESSION AUTHORIZATION;
 SELECT pg_temp.assert_true(NOT EXISTS(SELECT FROM preparation.analysis_plans WHERE workspace_id=:'ws') AND NOT EXISTS(SELECT FROM preparation.shared_contexts WHERE workspace_id=:'ws'),'expired private plan/context payloads purged before input removal');
 ROLLBACK;
+\endif
