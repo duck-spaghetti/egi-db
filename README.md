@@ -151,7 +151,7 @@ context-free protocols remain compatible; no configuration/provider call is seed
 stale reference decisions. Contract33 covers mapped-value undo and stable replay;
 see [reference resolution](docs/implementation/reference-resolution.md).
 
-The CW1 private workbench provider (EGI-146–149, migrations 030–036) adds versioned
+The CW1 private workbench provider (EGI-146–149, migrations 030–037) adds versioned
 [interpretations](docs/implementation/workbench-interpretations.md), immutable
 [plans and packets](docs/implementation/workbench-plans.md), separate
 [analysis/comparison coverage](docs/implementation/workbench-coverage.md), and
@@ -165,7 +165,7 @@ the canonical boundary. Taxonomy proposals and CSV batch transport remain deferr
 `scripts/verify-workbench.py` uses a caller-selected resource-owner checkout whose
 Git revision and source bytes are checked before import. The CW1 native handoff pins
 `84044a266dcbabab8319c9f5682d0437c7bea732`; the app tooling is development-only,
-with no database runtime dependency or copied resource module. Native SQL 40/41/43/44
+with no database runtime dependency or copied resource module. Native SQL 40/41/43/44/45
 and shell 42 cover the final proof/recovery/read/retention/concurrency changes on
 owned PostgreSQL 18/Sqitch fixtures. These are technical workflow checks using
 synthetic data, with no real model call or credentials. Semantic pilot acceptance

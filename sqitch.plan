@@ -38,3 +38,4 @@
 034_workbench_context [033_private_groups] 2026-11-27T18:04:00Z Marco <mfederici@proton.me> # Complete interpreted contextual input and conservative framing bounds (EGI-147)
 035_interpretation_verification [034_workbench_context] 2026-11-27T18:05:00Z Marco <mfederici@proton.me> # Preserve exact interpretation support and independent hypothesis verification (EGI-146)
 036_workbench_supports [035_interpretation_verification] 2026-11-27T18:06:00Z Marco <mfederici@proton.me> # Scope semantic support, retry lineage and proposal/member readers (EGI-148/149)
+037_workbench_workflow [036_workbench_supports] 2026-11-27T18:07:00Z Marco <mfederici@proton.me> # Explicit task selection, all-task lifecycle and attributable abstention (EGI-147/148)

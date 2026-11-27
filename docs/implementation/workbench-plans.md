@@ -72,3 +72,22 @@ retention hook before deleting inputs. Only the direct retention login and an
 expired trash workspace permit these immutable-row deletions. Active plan history
 retains its input foreign key; optional obsolete-input cleanup skips that retained
 input. Normal editors and workers cannot delete or rewrite frozen plans.
+
+
+Migration037 adds explicit task selection without changing existing callers.
+preview_analysis_plan(workspace,selection,configuration,limits,key,tasks text[])
+and amend_analysis_plan(workspace,plan,version,selection,configuration,limits,key,tasks text[])
+accept exactly classify_cards, group_labels or both. The five-/seven-argument
+interfaces retain both-task defaults. Tasks are canonicalized, immutable and bound
+in request replay; irrelevant followup kinds are removed from the effective limits.
+Changing tasks requires a new amendment identity, not reuse of a request key.
+
+A grouping-only preview freezes one primary initial comparison request, using
+literal contextual labels or explicitly materialized private interpretations and
+original owned supports. Selected records are reference-only; no classification
+packet, classification predecessor, implicit materialization or card edit is made.
+The initial comparison consumes one request/cost ceiling and does not consume a
+followup allowance. A scope with no eligible comparison labels is rejected with
+grouping_scope_required. Classification-only plans declare no comparison request.
+A later explicit continuation of an unfinished comparison remains bounded by the
+same allowed cross_packet_comparison followup and cumulative request/cost limits.

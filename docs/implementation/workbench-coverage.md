@@ -86,3 +86,34 @@ PostgreSQL/Sqitch and bounded owned fixture lifecycle. No model call or credenti
 are required. Structural rollback is for disposable schemas: normal user undo is
 versioned compensation. Expired preparation retention removes unit results before
 the plan/packet hook; selected immutable editorial evidence remains independent.
+
+
+Migration037 derives classification unit states from their retained attributable
+basis outcomes: no processed bases means not_analyzed; any explicit
+insufficient_context proposal means insufficient_context; other explicit inspected
+outcomes mean analyzed. Missing bases remain unresolved. Reconciliation normalizes
+before recovery and again after independently valid bases are retained. The final
+persistence validator rejects inconsistent state/diagnostic combinations; coverage
+also reads proposal outcomes for previously retained units. A proposed choice with
+incomplete_catalog alone is not turned into an abstention.
+
+Coverage exposes analysis_requested, comparison_requested and selected_record_count.
+For grouping-only plans, each reference record has state:null and
+reason:analysis_not_requested, and every classification summary count is zero;
+selected_record_count and the comparison scope retain the actual selected denominator.
+Classification-only records expose comparison_state:not_requested. Progress derives
+from the latest non-revoked job attempt for every declared task/unit, so queued or
+running comparisons keep running, unknown comparisons wait for explicit retry, and
+pre-dispatch comparison budget failures expose waiting_budget. Historical revoked
+unknowns retain their spend reservation without blocking a successful replacement.
+Terminal comparison abstention remains visible even when the supplied scope finishes.
+
+Native contract45 verifies task replay/amendment, primary grouping with zero
+followups, absence of hidden classification, zero unrequested analysis credit,
+classification-only scope, false analyzed state over explicit abstentions,
+queued/running/unknown comparison lifecycle, explicit retry, monthly budget refusal,
+explicit continuation and final abstention. The owned run through037 passed the
+full Sqitch deploy/verify/revert029/redeploy/reverify cycle and teardown; native43
+also passed unchanged. Evidence: /private/tmp/egi-cw1-db-037-workflow.log and
+/private/tmp/egi-cw1-db-037-first.log. These are synthetic PostgreSQL tests with no
+real provider transport, credentials, semantic pilot approval or deployment.
