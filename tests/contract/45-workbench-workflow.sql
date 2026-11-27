@@ -37,6 +37,7 @@ RESET SESSION AUTHORIZATION;
 SET SESSION AUTHORIZATION egi_probe30;
 SELECT pg_temp.assert_true(preparation.read_analysis_coverage(:'ws',(:'both_plan'::jsonb->>'plan_id')::uuid,1)->>'progress'='waiting_retry','comparison unknown exposes explicit retry');
 SELECT preparation.retry_uncertain_analysis_packet(:'ws',(:'group_claim'::jsonb#>>'{eligible_payload,packet_key}')::uuid,gen_random_uuid())->>'packet_id';
+SELECT pg_temp.assert_true(jsonb_array_length(preparation.read_analysis_coverage(:'ws',(:'both_plan'::jsonb->>'plan_id')::uuid,1)#>'{comparison_coverage,pending_scope_keys}')=1,'explicit unknown retry preserves one pending semantic scope across two packet attempts');
 RESET SESSION AUTHORIZATION;
 SELECT committed_microusd AS workflow_committed FROM preparation.budget_periods WHERE period_start=date_trunc('month',clock_timestamp() AT TIME ZONE 'UTC')::date \gset
 UPDATE preparation.budget_periods SET committed_microusd=limit_microusd-reserved_microusd-1 WHERE period_start=date_trunc('month',clock_timestamp() AT TIME ZONE 'UTC')::date;
@@ -50,6 +51,7 @@ RESET SESSION AUTHORIZATION;
 UPDATE preparation.budget_periods SET committed_microusd=:'workflow_committed' WHERE period_start=date_trunc('month',clock_timestamp() AT TIME ZONE 'UTC')::date;
 SET SESSION AUTHORIZATION egi_probe30;
 SELECT pg_temp.assert_true(preparation.continue_analysis_plan(:'ws',(:'both_plan'::jsonb->>'plan_id')::uuid,1,gen_random_uuid())->>'progress'='running','explicit continue retries unresolved comparison after budget restoration');
+SELECT pg_temp.assert_true(jsonb_array_length(preparation.read_analysis_coverage(:'ws',(:'both_plan'::jsonb->>'plan_id')::uuid,1)#>'{comparison_coverage,pending_scope_keys}')=1,'comparison continuation preserves one pending semantic scope across three packet attempts');
 RESET SESSION AUTHORIZATION;
 SET SESSION AUTHORIZATION egi_probe36_worker;
 SELECT preparation.claim_job(gen_random_uuid()) AS resumed_group \gset

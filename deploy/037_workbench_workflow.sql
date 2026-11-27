@@ -295,7 +295,7 @@ BEGIN
  'partial_records',count(*) FILTER(WHERE x->>'state'='partial'),'pending_records',count(*) FILTER(WHERE x->>'state' IN ('pending','queued','running')),'blocked_records',count(*) FILTER(WHERE x->>'state' IN ('ineligible','invalid_result','refused','uncertain','cancelled')),'stale_records',count(*) FILTER(WHERE x->>'state'='stale'),'scope_digest',p.selection_digest) INTO summary FROM jsonb_array_elements(outcomes) x;
  SELECT COALESCE(jsonb_agg(x->'unit_key'),'[]') INTO selected_labels FROM jsonb_array_elements(p.comparison_seed->'labels') x WHERE comparison_requested;
  SELECT COALESCE(jsonb_agg(DISTINCT r.unit_key),'[]') INTO completed FROM preparation.workbench_unit_results r JOIN preparation.analysis_packets a USING(packet_id) WHERE a.plan_id=pid AND a.plan_version=pversion AND a.task='group_labels' AND r.state IN ('analyzed','insufficient_context');
- SELECT COALESCE(jsonb_agg(k),'[]') INTO pending FROM preparation.analysis_packets a,jsonb_array_elements(a.manifest->'required_unit_keys') k WHERE a.plan_id=pid AND a.plan_version=pversion AND a.task='group_labels' AND NOT completed @> jsonb_build_array(k);
+ SELECT COALESCE(jsonb_agg(DISTINCT k),'[]') INTO pending FROM preparation.analysis_packets a,jsonb_array_elements(a.manifest->'required_unit_keys') k WHERE a.plan_id=pid AND a.plan_version=pversion AND a.task='group_labels' AND NOT completed @> jsonb_build_array(k);
  IF selected_labels<>'[]'::jsonb AND completed='[]'::jsonb AND pending='[]'::jsonb THEN pending:=jsonb_build_array('comparison:'||pid::text); END IF;
  -- The latest attempt for each declared unit is authoritative for lifecycle.
  -- Historical unknown spend remains held, but a revoked predecessor cannot stall its replacement.
@@ -422,89 +422,8 @@ BEGIN
 END $$;
 CREATE OR REPLACE FUNCTION preparation.validate_workbench_result(a preparation.analysis_packets,result jsonb) RETURNS void
 LANGUAGE plpgsql SET search_path=pg_catalog,pg_temp AS $$
-#variable_conflict use_column
-DECLARE u jsonb; requested jsonb; b jsonb; p jsonb; c jsonb; h jsonb; k jsonb; member jsonb; allowed_supports jsonb; weak_group boolean; known_context text; required jsonb:=a.manifest->'required_unit_keys';
 BEGIN
- PERFORM preparation.closed(result,ARRAY['schema_version','task','request_digest','state','unit_results','unprocessed_unit_keys','proposals','diagnostics'],ARRAY['schema_version','task','request_digest','state','unit_results','unprocessed_unit_keys','proposals','diagnostics']);
- IF result->'schema_version' IS DISTINCT FROM '1'::jsonb OR result->>'task' IS DISTINCT FROM a.task OR result->>'request_digest' IS DISTINCT FROM preparation.workbench_digest(a.request_body) OR
-  result->>'state' IS NULL OR result->>'state' NOT IN ('complete','incomplete','refused') OR jsonb_typeof(result->'unit_results') IS DISTINCT FROM 'array' OR jsonb_typeof(result->'unprocessed_unit_keys') IS DISTINCT FROM 'array' OR jsonb_typeof(result->'proposals') IS DISTINCT FROM 'array' OR jsonb_typeof(result->'diagnostics') IS DISTINCT FROM 'array' THEN
-  RAISE EXCEPTION USING ERRCODE='22023',MESSAGE='invalid_workbench_result'; END IF;
- PERFORM preparation.workbench_codes(result->'diagnostics');
- IF EXISTS(SELECT FROM jsonb_array_elements(result->'unprocessed_unit_keys') x GROUP BY x HAVING count(*)>1) OR EXISTS(SELECT FROM jsonb_array_elements(result->'unit_results') x GROUP BY x->>'unit_key' HAVING count(*)>1) OR EXISTS(SELECT FROM jsonb_array_elements(result->'proposals') x GROUP BY x->>'proposal_key' HAVING count(*)>1) OR
-  EXISTS(SELECT FROM jsonb_array_elements(required) x WHERE NOT EXISTS(SELECT FROM jsonb_array_elements(result->'unit_results') y WHERE y->'unit_key'=x) AND NOT (result->'unprocessed_unit_keys') @> jsonb_build_array(x)) THEN
-  RAISE EXCEPTION USING ERRCODE='22023',MESSAGE='workbench_coverage_mismatch'; END IF;
- FOR k IN SELECT * FROM jsonb_array_elements(result->'unprocessed_unit_keys') LOOP
-  IF NOT required @> jsonb_build_array(k) OR EXISTS(SELECT FROM jsonb_array_elements(result->'unit_results') x WHERE x->'unit_key'=k) THEN RAISE EXCEPTION USING ERRCODE='22023',MESSAGE='workbench_coverage_mismatch'; END IF;
- END LOOP;
- FOR u IN SELECT * FROM jsonb_array_elements(result->'unit_results') LOOP
-  PERFORM preparation.closed(u,ARRAY['unit_key','record_key','state','processed_basis_keys','unprocessed_basis_keys','proposal_keys','hypotheses','diagnostics'],ARRAY['unit_key','record_key','state','processed_basis_keys','unprocessed_basis_keys','proposal_keys','hypotheses','diagnostics']);
-  SELECT x INTO requested FROM jsonb_array_elements(a.data->'units') x WHERE x->'unit_key'=u->'unit_key';
-  IF requested IS NULL OR NOT required @> jsonb_build_array(u->'unit_key') OR u->'record_key' IS DISTINCT FROM requested->'record_key' OR u->>'state' IS NULL OR u->>'state' NOT IN ('analyzed','insufficient_context','not_analyzed') OR
-   jsonb_typeof(u->'processed_basis_keys') IS DISTINCT FROM 'array' OR jsonb_typeof(u->'unprocessed_basis_keys') IS DISTINCT FROM 'array' OR jsonb_typeof(u->'proposal_keys') IS DISTINCT FROM 'array' OR jsonb_typeof(u->'hypotheses') IS DISTINCT FROM 'array' OR jsonb_typeof(u->'diagnostics') IS DISTINCT FROM 'array' OR
-   NOT (requested->'basis_keys') @> ((u->'processed_basis_keys')||(u->'unprocessed_basis_keys')) OR NOT ((u->'processed_basis_keys')||(u->'unprocessed_basis_keys')) @> (requested->'basis_keys') OR
-   EXISTS(SELECT FROM jsonb_array_elements(u->'processed_basis_keys') x JOIN jsonb_array_elements(u->'unprocessed_basis_keys') y ON x=y) THEN
-   RAISE EXCEPTION USING ERRCODE='22023',MESSAGE='workbench_unit_mismatch'; END IF;
-  IF u->>'state'='not_analyzed' AND (u->'processed_basis_keys'<>'[]'::jsonb OR u->'hypotheses'<>'[]'::jsonb OR u->'proposal_keys'<>'[]'::jsonb) THEN RAISE EXCEPTION USING ERRCODE='22023',MESSAGE='workbench_unit_mismatch'; END IF;
-  PERFORM preparation.workbench_codes(u->'diagnostics');
-  IF EXISTS(SELECT FROM jsonb_array_elements((u->'processed_basis_keys')||(u->'unprocessed_basis_keys')) x GROUP BY x HAVING count(*)>1) OR EXISTS(SELECT FROM jsonb_array_elements(u->'proposal_keys') x GROUP BY x HAVING count(*)>1) OR EXISTS(SELECT FROM jsonb_array_elements(u->'hypotheses') x GROUP BY x->>'hypothesis_key' HAVING count(*)>1) THEN RAISE EXCEPTION USING ERRCODE='22023',MESSAGE='duplicate_workbench_reference'; END IF;
-  IF result->>'state'='complete' AND (u->>'state'='not_analyzed' OR u->'unprocessed_basis_keys'<>'[]'::jsonb) THEN RAISE EXCEPTION USING ERRCODE='22023',MESSAGE='false_complete_workbench_result'; END IF;
-  IF a.task='classify_cards' AND EXISTS(SELECT FROM jsonb_array_elements(u->'processed_basis_keys') bk WHERE (SELECT count(*) FROM jsonb_array_elements(result->'proposals') proposal WHERE proposal->'basis_key'=bk AND (u->'proposal_keys') @> jsonb_build_array(proposal->'proposal_key'))<>1) THEN RAISE EXCEPTION USING ERRCODE='22023',MESSAGE='explicit_basis_outcome_required'; END IF;
-  FOR k IN SELECT * FROM jsonb_array_elements(u->'proposal_keys') LOOP
-   IF NOT EXISTS(SELECT FROM jsonb_array_elements(result->'proposals') x WHERE x->'proposal_key'=k AND (a.task='group_labels' OR (u->'processed_basis_keys') @> jsonb_build_array(x->'basis_key'))) THEN RAISE EXCEPTION USING ERRCODE='22023',MESSAGE='workbench_proposal_ownership'; END IF;
-  END LOOP;
-  FOR h IN SELECT * FROM jsonb_array_elements(u->'hypotheses') LOOP
-   PERFORM preparation.closed(h,ARRAY['hypothesis_key','kind','statement','status','trigger_support_keys','verification_needed'],ARRAY['hypothesis_key','kind','statement','status','trigger_support_keys','verification_needed']);
-   IF jsonb_typeof(h->'hypothesis_key') IS DISTINCT FROM 'string' OR length(h->>'hypothesis_key') NOT BETWEEN 1 AND 100 OR h->>'kind' IS DISTINCT FROM 'abbreviation_expansion' OR h->>'status' IS DISTINCT FROM 'unverified' OR h->'verification_needed' IS DISTINCT FROM 'true'::jsonb OR jsonb_typeof(h->'statement') IS DISTINCT FROM 'string' OR length(btrim(h->>'statement')) NOT BETWEEN 1 AND 300 OR jsonb_typeof(h->'trigger_support_keys') IS DISTINCT FROM 'array' OR jsonb_array_length(h->'trigger_support_keys')=0 THEN RAISE EXCEPTION USING ERRCODE='22023',MESSAGE='model_hypothesis_verification_forbidden'; END IF;
-   FOR k IN SELECT * FROM jsonb_array_elements(h->'trigger_support_keys') LOOP
-    IF NOT EXISTS(SELECT FROM jsonb_array_elements(a.data->'supports') x WHERE x->'support_key'=k AND x->'record_key'=u->'record_key') THEN RAISE EXCEPTION USING ERRCODE='22023',MESSAGE='unbound_workbench_support'; END IF;
-   END LOOP;
-  END LOOP;
- END LOOP;
- IF result->>'state'='complete' AND result->'unprocessed_unit_keys'<>'[]'::jsonb THEN RAISE EXCEPTION USING ERRCODE='22023',MESSAGE='false_complete_workbench_result'; END IF;
- FOR p IN SELECT * FROM jsonb_array_elements(result->'proposals') LOOP
-  IF a.task='classify_cards' THEN
-   PERFORM preparation.closed(p,ARRAY['proposal_key','basis_key','state','choices','missing_context'],ARRAY['proposal_key','basis_key','state','choices','missing_context']);
-   SELECT x INTO b FROM jsonb_array_elements(a.data->'bases') x WHERE x->'basis_key'=p->'basis_key';
-   IF b IS NULL OR p->>'state' IS NULL OR p->>'state' NOT IN ('proposed','no_supplied_match','insufficient_context') OR jsonb_typeof(p->'missing_context') IS DISTINCT FROM 'array' OR NOT EXISTS(SELECT FROM jsonb_array_elements(result->'unit_results') x WHERE (x->'processed_basis_keys') @> jsonb_build_array(p->'basis_key') AND (x->'proposal_keys') @> jsonb_build_array(p->'proposal_key')) THEN RAISE EXCEPTION USING ERRCODE='22023',MESSAGE='unbound_workbench_proposal'; END IF;
-   PERFORM preparation.workbench_codes(p->'missing_context');
-   IF (p->>'state'='insufficient_context' AND p->'missing_context'='[]'::jsonb) OR (a.request_body#>'{catalog_context,complete}'='false'::jsonb AND NOT (p->'missing_context') @> '["incomplete_catalog"]'::jsonb) THEN RAISE EXCEPTION USING ERRCODE='22023',MESSAGE='explicit_missing_context_required'; END IF;
-  ELSE
-   PERFORM preparation.closed(p,ARRAY['proposal_key','relation','unit_keys','membership_issues','choices','reason','support_keys'],ARRAY['proposal_key','relation','unit_keys','membership_issues','choices','reason','support_keys']);
-   IF p->>'relation' IS NULL OR p->>'relation' NOT IN ('equivalent','related','ambiguous') OR jsonb_typeof(p->'unit_keys') IS DISTINCT FROM 'array' OR jsonb_array_length(p->'unit_keys')<1 OR jsonb_typeof(p->'membership_issues') IS DISTINCT FROM 'array' THEN RAISE EXCEPTION USING ERRCODE='22023',MESSAGE='invalid_group_proposal'; END IF;
-   FOR k IN SELECT * FROM jsonb_array_elements(p->'unit_keys') LOOP
-    IF NOT EXISTS(SELECT FROM jsonb_array_elements(a.data->'labels') x WHERE x->'unit_key'=k) THEN RAISE EXCEPTION USING ERRCODE='22023',MESSAGE='unbound_group_member'; END IF;
-   END LOOP;
-   IF jsonb_typeof(p->'reason') IS DISTINCT FROM 'string' OR length(btrim(p->>'reason')) NOT BETWEEN 1 AND 300 OR jsonb_typeof(p->'support_keys') IS DISTINCT FROM 'array' THEN RAISE EXCEPTION USING ERRCODE='22023',MESSAGE='invalid_group_reason'; END IF;
-   IF jsonb_array_length(p->'unit_keys')=1 AND NOT EXISTS(SELECT FROM jsonb_array_elements(a.data->'labels') l WHERE l->'unit_key'=p#>'{unit_keys,0}' AND (SELECT count(DISTINCT jsonb_build_array(o->'record_key',o->'basis_key')) FROM jsonb_array_elements(l->'occurrences') o)>=2) THEN RAISE EXCEPTION USING ERRCODE='22023',MESSAGE='insufficient_group_occurrences'; END IF;
-   known_context:=preparation.workbench_digest(jsonb_build_object('scope',a.request_body#>'{shared_context,scope}','catalog_snapshot',a.request_body#>'{shared_context,catalog_snapshot}'));
-   SELECT COALESCE(jsonb_agg(DISTINCT support->'support_key'),'[]') INTO allowed_supports FROM jsonb_array_elements(a.data->'supports') support WHERE EXISTS(SELECT FROM jsonb_array_elements(a.data->'labels') l,jsonb_array_elements(l->'occurrences') occurrence WHERE (p->'unit_keys') @> jsonb_build_array(l->'unit_key') AND occurrence->'record_key'=support->'record_key');
-   weak_group:=false;
-   FOR member IN SELECT * FROM jsonb_array_elements(a.data->'labels') l WHERE (p->'unit_keys') @> jsonb_build_array(l->'unit_key') LOOP
-    IF member->>'context_key' IS DISTINCT FROM known_context OR (member->>'count')::integer>jsonb_array_length(member->'occurrences') THEN
-     weak_group:=true;
-     IF NOT EXISTS(SELECT FROM jsonb_array_elements(p->'membership_issues') issue WHERE issue->'unit_key'=member->'unit_key') THEN RAISE EXCEPTION USING ERRCODE='22023',MESSAGE='group_membership_issue_required'; END IF;
-    END IF;
-   END LOOP;
-   IF weak_group AND (p->>'relation'='equivalent' OR p->'choices'<>'[]'::jsonb) THEN RAISE EXCEPTION USING ERRCODE='22023',MESSAGE='group_context_not_applicable'; END IF;
-   FOR member IN SELECT * FROM jsonb_array_elements(p->'membership_issues') LOOP
-    PERFORM preparation.closed(member,ARRAY['unit_key','reason'],ARRAY['unit_key','reason']);
-    IF NOT (p->'unit_keys') @> jsonb_build_array(member->'unit_key') OR jsonb_typeof(member->'reason') IS DISTINCT FROM 'string' OR length(btrim(member->>'reason')) NOT BETWEEN 1 AND 300 THEN RAISE EXCEPTION USING ERRCODE='22023',MESSAGE='invalid_membership_issue'; END IF;
-   END LOOP;
-   IF NOT allowed_supports @> (p->'support_keys') THEN RAISE EXCEPTION USING ERRCODE='22023',MESSAGE='unbound_group_support'; END IF;
-   IF NOT EXISTS(SELECT FROM jsonb_array_elements(result->'unit_results') x JOIN jsonb_array_elements(a.data->'units') y ON y->'unit_key'=x->'unit_key' WHERE (x->'proposal_keys') @> jsonb_build_array(p->'proposal_key') AND (y->'member_keys') @> (p->'unit_keys')) OR EXISTS(SELECT FROM jsonb_array_elements(p->'unit_keys') x GROUP BY x HAVING count(*)>1) THEN RAISE EXCEPTION USING ERRCODE='22023',MESSAGE='unbound_group_proposal'; END IF;
-  END IF;
-  IF jsonb_typeof(p->'proposal_key') IS DISTINCT FROM 'string' OR length(p->>'proposal_key') NOT BETWEEN 1 AND 100 OR jsonb_typeof(p->'choices') IS DISTINCT FROM 'array' OR jsonb_array_length(p->'choices')>5 THEN RAISE EXCEPTION USING ERRCODE='22023',MESSAGE='invalid_workbench_proposal'; END IF;
-  IF (SELECT count(*) FROM jsonb_array_elements(result->'unit_results') x WHERE (x->'proposal_keys') @> jsonb_build_array(p->'proposal_key'))<>1 OR (a.task='classify_cards' AND ((p->>'state'='proposed' AND jsonb_array_length(p->'choices')=0) OR (p->>'state'<>'proposed' AND jsonb_array_length(p->'choices')<>0))) THEN RAISE EXCEPTION USING ERRCODE='22023',MESSAGE='invalid_workbench_proposal_owner_or_state'; END IF;
-  FOR c IN SELECT * FROM jsonb_array_elements(p->'choices') LOOP
-   PERFORM preparation.closed(c,ARRAY['candidate_key','reason','support_keys'],ARRAY['candidate_key','reason','support_keys']);
-   IF NOT EXISTS(SELECT FROM jsonb_array_elements(a.request_body#>'{catalog_context,entries}') x WHERE x->'candidate_key'=c->'candidate_key') OR jsonb_typeof(c->'reason') IS DISTINCT FROM 'string' OR length(btrim(c->>'reason')) NOT BETWEEN 1 AND 300 OR jsonb_typeof(c->'support_keys') IS DISTINCT FROM 'array' OR jsonb_array_length(c->'support_keys')=0 THEN RAISE EXCEPTION USING ERRCODE='22023',MESSAGE='invalid_workbench_choice'; END IF;
-   IF a.task='group_labels' AND NOT allowed_supports @> (c->'support_keys') THEN RAISE EXCEPTION USING ERRCODE='22023',MESSAGE='unbound_group_support'; END IF;
-   IF a.task='classify_cards' AND EXISTS(SELECT FROM jsonb_array_elements(result->'unit_results') owner WHERE (owner->'proposal_keys') @> jsonb_build_array(p->'proposal_key') AND owner->'hypotheses'<>'[]'::jsonb AND NOT EXISTS(SELECT FROM jsonb_array_elements(c->'support_keys') sk WHERE NOT EXISTS(SELECT FROM jsonb_array_elements(owner->'hypotheses') hypothesis WHERE (hypothesis->'trigger_support_keys') @> jsonb_build_array(sk)))) THEN RAISE EXCEPTION USING ERRCODE='22023',MESSAGE='hypothesis_trigger_cannot_justify_category'; END IF;
-   FOR k IN SELECT * FROM jsonb_array_elements(c->'support_keys') LOOP
-    IF NOT EXISTS(SELECT FROM jsonb_array_elements(a.data->'supports') x WHERE x->'support_key'=k AND (a.task='group_labels' OR x->'record_key'=b->'record_key')) THEN RAISE EXCEPTION USING ERRCODE='22023',MESSAGE='unbound_workbench_support'; END IF;
-   END LOOP;
-  END LOOP;
- END LOOP;
+ PERFORM preparation.validate_workbench_result_before_workflow(a,result);
  IF result IS DISTINCT FROM preparation.normalize_workbench_states(a,result) THEN RAISE EXCEPTION USING ERRCODE='22023',MESSAGE='workbench_state_outcome_mismatch'; END IF;
 END $$;
 CREATE OR REPLACE FUNCTION preparation.reconcile_workbench_result(a preparation.analysis_packets,result jsonb) RETURNS jsonb

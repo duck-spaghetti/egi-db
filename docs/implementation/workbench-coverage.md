@@ -117,3 +117,9 @@ full Sqitch deploy/verify/revert029/redeploy/reverify cycle and teardown; native
 also passed unchanged. Evidence: /private/tmp/egi-cw1-db-037-workflow.log and
 /private/tmp/egi-cw1-db-037-first.log. These are synthetic PostgreSQL tests with no
 real provider transport, credentials, semantic pilot approval or deployment.
+
+Pending comparison scope keys are distinct semantic identities across retries and
+continuations; packet attempts remain separately visible in plan readers. The final
+validator delegates the full ownership/shape rules to one private baseline helper
+and adds the outcome-derived state check. Contract45 asserts a single unresolved
+scope after both unknown retry and budget continuation.
