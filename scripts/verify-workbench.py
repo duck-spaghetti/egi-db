@@ -21,6 +21,7 @@ def main():
     parser.add_argument("--revision", required=True)
     parser.add_argument("--through", default="030_preparation_interpretations")
     parser.add_argument("--fixture", action="append", default=[])
+    parser.add_argument("--shell-check", action="append", default=[])
     args = parser.parse_args()
     repository = Path(__file__).resolve().parents[1]
     tools = args.tools.resolve()
@@ -58,6 +59,8 @@ def main():
             check("verify", [*base, "verify", "--to", args.through, "db:pg:egi_workbench"])
             for fixture in args.fixture:
                 check(fixture, [pg / "psql", "-X", "-v", "ON_ERROR_STOP=1", "-f", fixture])
+            for script in args.shell_check:
+                check(script, ["sh", script])
             check("revert", [*base, "revert", "-y", "--to", "029_preparation_resolution_undo", "db:pg:egi_workbench"])
             check("redeploy", [*base, "deploy", "--to", args.through, "db:pg:egi_workbench"])
             check("reverify", [*base, "verify", "--to", args.through, "db:pg:egi_workbench"])

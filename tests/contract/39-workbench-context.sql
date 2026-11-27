@@ -80,4 +80,7 @@ SELECT preparation.preview_analysis_plan(:'ws',ARRAY[(:'description_card1'::json
 RESET SESSION AUTHORIZATION;
 SELECT pg_temp.assert_true(EXISTS(SELECT FROM preparation.analysis_plans p,jsonb_array_elements(p.comparison_seed->'prior_proposals') prior WHERE p.plan_id=(:'missing_catalog_plan'::jsonb->>'plan_id')::uuid
  AND prior->'choices'='[]'::jsonb AND prior->'missing_context'='["incomplete_catalog"]'::jsonb),'unavailable actual catalog choices omitted with explicit catalog limitation');
+\if :{?keep_context_transaction}
+\else
 ROLLBACK;
+\endif

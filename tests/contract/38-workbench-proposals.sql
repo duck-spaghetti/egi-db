@@ -135,4 +135,7 @@ SET SESSION AUTHORIZATION egi_probe36_worker;
 SELECT preparation.finish_job((:'repeated_group_claim'::jsonb->>'job_id')::uuid,(:'repeated_group_dispatch'::jsonb->>'dispatch_id')::uuid,:'repeated_group_claim'::jsonb->>'lease',:'repeated_group_result','{"input_tokens":100,"output_tokens":20,"cached_input_tokens":0}');
 RESET SESSION AUTHORIZATION;
 SELECT pg_temp.assert_true((SELECT output#>>'{proposals,0,relation}'='equivalent' FROM preparation.jobs WHERE id=(:'repeated_group_claim'::jsonb->>'job_id')::uuid),'singleton contextual unit with multiple complete owned occurrences can form reviewed group');
+\if :{?keep_proposal_transaction}
+\else
 ROLLBACK;
+\endif

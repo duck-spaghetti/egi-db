@@ -7,7 +7,7 @@ CREATE FUNCTION pg_temp.workbench_result(req jsonb,unit_state text DEFAULT 'anal
   'unit_results',(SELECT jsonb_agg(jsonb_build_object('unit_key',u->'unit_key','record_key',u->'record_key','state',unit_state,'processed_basis_keys',u->'basis_keys','unprocessed_basis_keys','[]'::jsonb,
    'proposal_keys',(SELECT jsonb_agg('p:'||(k#>>'{}')) FROM jsonb_array_elements(u->'basis_keys') k),'hypotheses','[]'::jsonb,'diagnostics','[]'::jsonb)) FROM jsonb_array_elements(req#>'{data,units}') u),
   'unprocessed_unit_keys','[]'::jsonb,'diagnostics','[]'::jsonb,
-  'proposals',(SELECT jsonb_agg(jsonb_build_object('proposal_key','p:'||(b->>'basis_key'),'basis_key',b->'basis_key','state',CASE WHEN unit_state='insufficient_context' THEN 'insufficient_context' ELSE 'no_supplied_match' END,'choices','[]'::jsonb,'missing_context','[]'::jsonb)) FROM jsonb_array_elements(req#>'{data,bases}') b));
+  'proposals',(SELECT jsonb_agg(jsonb_build_object('proposal_key','p:'||(b->>'basis_key'),'basis_key',b->'basis_key','state',CASE WHEN unit_state='insufficient_context' THEN 'insufficient_context' ELSE 'no_supplied_match' END,'choices','[]'::jsonb,'missing_context',CASE WHEN unit_state='insufficient_context' THEN '["insufficient_context"]'::jsonb ELSE '[]'::jsonb END)) FROM jsonb_array_elements(req#>'{data,bases}') b));
 $$;
 CREATE ROLE egi_probe36_worker LOGIN IN ROLE egi_preparation_worker;
 SET SESSION AUTHORIZATION egi_probe30;

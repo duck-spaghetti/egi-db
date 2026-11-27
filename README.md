@@ -150,3 +150,23 @@ context-free protocols remain compatible; no configuration/provider call is seed
 `029_preparation_resolution_undo` restores literal corrections without reviving
 stale reference decisions. Contract33 covers mapped-value undo and stable replay;
 see [reference resolution](docs/implementation/reference-resolution.md).
+
+The CW1 private workbench provider (EGI-146–149, migrations 030–036) adds versioned
+[interpretations](docs/implementation/workbench-interpretations.md), immutable
+[plans and packets](docs/implementation/workbench-plans.md), separate
+[analysis/comparison coverage](docs/implementation/workbench-coverage.md), and
+[private groups with resumable apply/undo](docs/implementation/workbench-groups.md).
+The [context profile](docs/implementation/workbench-context.md) and
+[scoped proposal/receipt readers](docs/implementation/workbench-proposals.md)
+preserve exact owned source support and explicit human decisions. Model results
+never publish or confirm categories; existing explicit Community moderation remains
+the canonical boundary. Taxonomy proposals and CSV batch transport remain deferred.
+
+`scripts/verify-workbench.py` uses a caller-selected resource-owner checkout whose
+Git revision and source bytes are checked before import. The CW1 native handoff pins
+`84044a266dcbabab8319c9f5682d0437c7bea732`; the app tooling is development-only,
+with no database runtime dependency or copied resource module. Native SQL 40/41/43/44
+and shell 42 cover the final proof/recovery/read/retention/concurrency changes on
+owned PostgreSQL 18/Sqitch fixtures. These are technical workflow checks using
+synthetic data, with no real model call or credentials. Semantic pilot acceptance
+and real-provider evaluation remain separate gates.
