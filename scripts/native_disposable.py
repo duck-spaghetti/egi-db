@@ -2,11 +2,12 @@
 import os
 from pathlib import Path
 import re
-import shutil
 import subprocess
-import tempfile
 
 ROOT = Path(__file__).resolve().parents[1]
+from devtools_source import source
+source(ROOT)
+from devchecks.resources import OwnedCluster, ResourceRun, PrerequisiteError
 
 
 def verify():
@@ -15,25 +16,18 @@ def verify():
     version = subprocess.check_output([binary / "postgres", "--version"], text=True)
     if not version.startswith("postgres (PostgreSQL) 18."):
         raise RuntimeError("Selected PostgreSQL18 prerequisite unavailable")
-    cluster = Path(tempfile.mkdtemp(prefix="egi-devcheck-", dir="/private/tmp"))
-    data = cluster / "data"
-    environment = {k: v for k, v in os.environ.items() if not k.startswith("PG")}
-    environment.update(PGHOST=str(cluster), PGPORT="65432", PGDATABASE="egi_contract", EGI_PSQL=str(binary / "psql"))
     names = [line.split()[0] for line in (ROOT / "sqitch.plan").read_text().splitlines()
              if re.match(r"^[0-9]{3}_", line)]
     (ROOT / ".local").mkdir(exist_ok=True)
-    try:
+    with OwnedCluster(ROOT, binary, 65432, 'egi_contract') as owned:
+        data = owned.data
+        environment = {**owned.environment, 'EGI_PSQL': str(binary / 'psql')}
         with (ROOT / ".local/native-last.log").open("w") as log:
             def command(*args):
                 """Execute only the selected binaries against this owned fixture environment."""
                 subprocess.run([str(item) for item in args], env=environment, cwd=ROOT,
                                stdout=log, stderr=subprocess.STDOUT, timeout=180, check=True)
 
-            command(binary / "initdb", "-D", data, "-A", "trust", "--no-locale", "--encoding=UTF8")
-            with (data / "postgresql.conf").open("a") as config:
-                config.write(f"\nlisten_addresses=''\nunix_socket_directories='{cluster}'\nport=65432\n")
-            command(binary / "pg_ctl", "-D", data, "-l", cluster / "server.log", "-w", "start")
-            command(binary / "createdb", "egi_contract")
             identity = subprocess.check_output([binary / "psql", "-XAt", "-c",
                 "SELECT current_database()||'|'||current_setting('data_directory')||'|'||COALESCE(inet_server_addr()::text,'socket')"],
                 env=environment, text=True).strip()
@@ -67,13 +61,15 @@ def verify():
                 sql(ROOT / "verify" / (name + ".sql"))
             contracts()
             log.write("PASS isolated native SQL and discovered contracts/concurrency; not Sqitch registry evidence\n")
-    finally:
-        pid = data / "postmaster.pid"
-        if pid.exists() and pid.read_text().splitlines()[1] == str(data):
-            subprocess.run([binary / "pg_ctl", "-D", data, "-m", "fast", "-w", "stop"],
-                           capture_output=True, check=True, timeout=30)
-        shutil.rmtree(cluster)
 
 
 if __name__ == "__main__":
-    verify()
+    try:
+        if ResourceRun.inherited():
+            verify()
+        else:
+            with ResourceRun(ROOT).activate():
+                verify()
+    except PrerequisiteError as error:
+        print(str(error))
+        raise SystemExit(2)

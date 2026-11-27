@@ -106,3 +106,23 @@ taxonomy, dynamic translations and public directory reads. Read the
 The group was reviewed and pushed to dev at 9d4013c. Ticket #10 supplies final
 [integrated acceptance](docs/implementation/acceptance.md). The user authorized final
 dev delivery, independent review, a PR to master and issue closure after verification.
+
+## Owned native resources — EGI-142
+
+Native plan checks and the separate Sqitch registry lifecycle now use the same
+app-owned standard-library resource owner, verified byte-for-byte at the exact
+revision in `.checks/tool-source.json`. `EGI_DEVTOOLS_SOURCE` selects its explicit
+checkout. Missing or changed provider bytes block the check; no copied fallback.
+
+Before native startup the runner measures the actual temporary filesystem:
+less than15 GiB blocks;15–below30 GiB warns;30 GiB or more proceeds. The public
+profile reports preflight separately and preserves its existing0/1/2 result codes.
+The runner supervises exact-run resources after failures and timeouts; each cluster
+checks identity and confirmed shutdown before removal. Failed shutdown preserves
+files and fails the check. Existing demo/legacy clusters and backups are untouched.
+
+`sh scripts/verify-disposable.sh` delegates to `scripts/sqitch_disposable.py` using
+`EGI_PYTHON` or python3. The retained SQL/registry sequence is in
+`scripts/sqitch-contracts.sh`; it is not a standalone database setup command.
+Keep selected Sqitch/Perl prerequisites from the setup guide. Resource-policy
+probes run with `python3 -m unittest discover -s tests -p test_resource_checks.py`.

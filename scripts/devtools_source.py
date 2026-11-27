@@ -16,8 +16,10 @@ def source(root):
     selected=Path(os.environ.get('EGI_DEVTOOLS_SOURCE',str(root/policy['source']))).resolve()
     for name in ('scripts/devchecks/__init__.py','scripts/devchecks/report.py',
                  'scripts/devchecks/commit_titles.py','scripts/devchecks/python_tests.py',
-                 'scripts/commit_guard.py','scripts/install_hooks.py'):
-        expected=subprocess.check_output(['git','-C',str(selected),'show',revision+':'+name],stderr=subprocess.DEVNULL)
+                 'scripts/commit_guard.py','scripts/install_hooks.py','scripts/devchecks/resources.py'):
+        expected=subprocess.check_output(['git','-C',str(selected),'show',revision+':'+name],
+                                         env={k:v for k,v in os.environ.items() if not k.startswith('GIT_')},
+                                         stderr=subprocess.DEVNULL)
         if (selected/name).read_bytes()!=expected:
             raise ValueError('Pinned development-tool source mismatch: '+name)
     sys.path.insert(0,str(selected/'scripts'))
