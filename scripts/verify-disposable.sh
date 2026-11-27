@@ -31,17 +31,23 @@ done
 "$EGI_SQITCH" deploy --db-client "$EGI_PSQL" db:pg:egi_contract
 "$EGI_SQITCH" verify --db-client "$EGI_PSQL" db:pg:egi_contract
 "$EGI_PSQL" -X -v ON_ERROR_STOP=1 -f tests/contract/00-clean.sql
-for EGI_CHECK in tests/contract/01-foundation.sql tests/contract/02-evidence.sql tests/contract/03-canonical.sql tests/contract/04-publication.sql tests/contract/05-hours.sql tests/contract/06-calendar.sql tests/contract/07-taxonomy.sql tests/contract/08-translations.sql tests/contract/09-directory.sql tests/contract/10-integrated.sql tests/contract/11-sync.sql tests/contract/12-hardening.sql; do
+for EGI_CHECK in tests/contract/[0-9][0-9]-*.sql; do
+  [ "${EGI_CHECK##*/}" = "00-clean.sql" ] && continue
   "$EGI_PSQL" -X -v ON_ERROR_STOP=1 -f "$EGI_CHECK"
 done
-sh tests/contract/05-concurrency.sh
+for EGI_CONCURRENT in tests/contract/[0-9][0-9]-*.sh; do
+  sh "$EGI_CONCURRENT"
+done
 "$EGI_SQITCH" revert -y --db-client "$EGI_PSQL" db:pg:egi_contract
 "$EGI_SQITCH" deploy --db-client "$EGI_PSQL" db:pg:egi_contract
 "$EGI_SQITCH" verify --db-client "$EGI_PSQL" db:pg:egi_contract
 "$EGI_PSQL" -X -v ON_ERROR_STOP=1 -f tests/contract/00-clean.sql
-for EGI_CHECK in tests/contract/01-foundation.sql tests/contract/02-evidence.sql tests/contract/03-canonical.sql tests/contract/04-publication.sql tests/contract/05-hours.sql tests/contract/06-calendar.sql tests/contract/07-taxonomy.sql tests/contract/08-translations.sql tests/contract/09-directory.sql tests/contract/10-integrated.sql tests/contract/11-sync.sql tests/contract/12-hardening.sql; do
+for EGI_CHECK in tests/contract/[0-9][0-9]-*.sql; do
+  [ "${EGI_CHECK##*/}" = "00-clean.sql" ] && continue
   "$EGI_PSQL" -X -v ON_ERROR_STOP=1 -f "$EGI_CHECK"
 done
-sh tests/contract/05-concurrency.sh
+for EGI_CONCURRENT in tests/contract/[0-9][0-9]-*.sh; do
+  sh "$EGI_CONCURRENT"
+done
 "$EGI_PSQL" -X -v ON_ERROR_STOP=1 -c "SELECT postgis_full_version();"
 printf '%s\n' 'Checkpoint #10: fresh deploy, structural verify, SQL contracts, concurrency and revert/redeploy passed.'

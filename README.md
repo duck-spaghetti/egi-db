@@ -1,3 +1,41 @@
+# Current development checks — EGI-132
+
+```sh
+python3 scripts/check.py --profile quick --json
+python3 scripts/check.py --profile complete --json
+```
+
+Activate the selected Python/build environment. This repository owns its checks;
+shared reporting, commit-title policy and hook installer are consumed from one exact
+app Git revision recorded in `.checks/tool-source.json`. Set EGI_DEVTOOLS_SOURCE to
+that source checkout if its default sibling location is unavailable. All imported
+shared files must match the pinned commit before they execute; missing/mismatched
+source returns blocked (exit2). No new web runtime dependency is introduced.
+
+Commit-msg/pre-push/CI use the same canonical validator through
+`python3 scripts/commit_guard.py`. `python3 scripts/install_hooks.py` activates only
+this assigned worktree's hooks and preserves unrelated hook paths. Ordinary titles
+use EGI-positive-number: summary; merge/revert handling and exact legacy SHA exceptions
+follow the shared policy. Local checkpoints may be incomplete; pre-push requires
+clean matching source, passed Complete and applicable Integration. Required remote
+CI enforcement remains session3 work, not evidence from hook configuration alone.
+
+Quick checks owning plan triplets. Complete and Integration run the discovered
+native SQL/permission/concurrency/deploy-revert-redeploy lifecycle on an owned
+socket-only PostgreSQL18 fixture, then the existing Sqitch registry lifecycle.
+They are separate results. Set EGI_PG_BIN, EGI_SQITCH and PERL5LIB for the already
+selected native/contained toolchain. No inherited PG connection variable can redirect
+Sqitch toward a retained target. The owned native log is `.local/native-last.log`;
+fixture cleanup is limited to its generated directory and positively identified
+postmaster. This runner creates no migration or production-data change. Standard-
+library Python orchestrates existing SQL checks; no new Python test framework is used.
+
+Exit0 means passed,1 failed and2 prerequisite-blocked. Common JSON schema1 reports
+the selected profile, owning source commit, check status/reasons and timings.
+Importer/sources and current product feature integration stay outside this scope.
+
+## Earlier component setup and evidence
+
 # EGI canonical database
 
 PostgreSQL/PostGIS is EGI's authoritative database. Sqitch manages structure;
