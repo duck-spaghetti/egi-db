@@ -140,3 +140,8 @@ provide bounded authorized catalog pages, context/head-checked choices and atomi
 explicit organization draft creation. No lookup/save/extraction publishes an entity.
 See [reference resolution](docs/implementation/reference-resolution.md) for v2
 decisions, source attribution, publication and rollback boundaries.
+
+`027_preparation_category_matches` completes the optional provider seam: a frozen
+public category context in immutable configuration, current pre-dispatch checks,
+conditional supplied-key matches and stable unconfirmed resolutions. Existing
+context-free protocols remain compatible; no configuration/provider call is seeded.

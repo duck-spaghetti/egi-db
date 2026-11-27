@@ -111,3 +111,39 @@ or confirmed references in private history or editorial snapshots. No revert del
 or downgrades user data. Structural triplets seed no entities/configurations. Native
 psql can exercise their SQL independently; that does not establish Sqitch registry
 execution when the local Sqitch/Perl prerequisite is unavailable.
+
+## Optional same-exchange category suggestions
+
+Change027 completes the provider seam for Reviewer0.4.0. An environment-owned
+immutable v2 ai_configurations.provider_config may contain catalog_context v1
+(see the Reviewer's matching contract). No configuration is seeded. Its digest is
+SHA256 of canonical compact sorted UTF8 JSON without digest; canonical_json has
+cross-language fixture coverage. Configuration version freezes this context and
+therefore binds the existing job reuse/cache identity. An installation needs a new
+verified configuration version for another catalog context. Operator local searches
+and deterministic matching do not change configuration or initiate another call.
+
+Insert, pre-dispatch and result validation check actual published sealed-release
+labels, active terms, territory/axis, both adoption endpoints, broader links, coverage,
+unique local keys and digest. Context is bounded to100 category references. A context
+claiming complete must contain every currently eligible term in that selected axis.
+Organization/draft catalog contexts are not provider eligible. An invalid/stale
+context fails before dispatch/reservation; known usage from an invalid returned
+match still settles under the existing finish_job accounting contract.
+
+With context, each v2 candidate requires matches: local fact_key, context_digest and
+ordered choices containing supplied candidate_key/reason only. Foreign fact keys,
+unknown canonical IDs, duplicate choices and role/selection fields fail. Without
+context the existing v1/v2 result grammar stays closed. Materialization remaps local
+keys through the exact retained literal locators into stable server fact IDs, adding
+only proposed/unresolved resolutions; canonical service.classifications stays empty.
+Refresh preserves manual/cleared values and confirmed/ignored decisions. A changed
+fact cannot retain either a proposed or confirmed old choice.
+
+Contract32 reuses30's published fixtures, verifies the real request/worker/ledger/
+materialization path, cache separation, invalid-result settlement and manual refresh.
+A session-only UTC-12→UTC+14 shift crosses a fixture adoption's end date, testing
+pre-dispatch expiry without changing immutable adoption rows or the machine clock.
+Revert027 refuses any retained immutable configuration using catalog_context. It
+never erases a job/configuration to make rollback pass. Native disposable tests
+exercise both the refusal and a safe ordered revert/redeploy on unused state.

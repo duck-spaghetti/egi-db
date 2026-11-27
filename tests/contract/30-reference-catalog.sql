@@ -108,7 +108,7 @@ BEGIN
  SELECT entity_id INTO other_term FROM governance.entity_revisions WHERE revision_id=otr;
  release:=governance.freeze_taxonomy_release(vr,'v1',jsonb_build_array(jsonb_build_object('axis_id',axis,'label','Service type'),jsonb_build_object('axis_id',other_axis,'label','Audience')),
  jsonb_build_array(jsonb_build_object('term_id',term,'revision_id',tr),jsonb_build_object('term_id',other_term,'revision_id',otr)),'[]','Controlled release');
- adoption:=governance.adopt_taxonomy_release(t,release,current_date-1,NULL,'Current context');
+ adoption:=governance.adopt_taxonomy_release(t,release,current_date-1,CASE WHEN current_setting('egi.reference_expiry',true)='on' THEN current_date END,'Current context');
  future_adoption:=governance.adopt_taxonomy_release(other_t,release,current_date+1,NULL,'Future context');
  -- Identical labels do not coalesce organization identities.
  r:=pg_temp.catalog_save('organization','{"name":"Same name","original_language":"it"}');
@@ -170,8 +170,11 @@ END $$;
 SET SESSION AUTHORIZATION egi_probe30;
 SELECT pg_temp.check_catalog(:'ws',:'item',:'payload');
 RESET SESSION AUTHORIZATION;
+\if :{?keep_reference_transaction}
+\else
 \if :{?keep_references}
 COMMIT;
 \else
 ROLLBACK;
+\endif
 \endif
