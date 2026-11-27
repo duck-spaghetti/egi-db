@@ -31,18 +31,18 @@ def verify():
                     """Execute only the selected binaries against this owned fixture environment."""
                     subprocess.run([str(item) for item in args], env=environment, cwd=ROOT,
                                    stdout=log, stderr=subprocess.STDOUT, timeout=180, check=True)
-    
+
                 identity = subprocess.check_output([binary / "psql", "-XAt", "-c",
                     "SELECT current_database()||'|'||current_setting('data_directory')||'|'||COALESCE(inet_server_addr()::text,'socket')"],
                     env=environment, text=True).strip()
                 if identity != "egi_contract|" + str(data) + "|socket":
                     raise RuntimeError("Owned fixture identity mismatch")
                 log.write(identity + "\n"); log.flush()
-    
+
                 def sql(path):
                     """Apply one actual owning plan/contract file with failure-on-error."""
                     command(binary / "psql", "-X", "-v", "ON_ERROR_STOP=1", "-f", path)
-    
+
                 def contracts():
                     """Discover SQL and concurrent checks once, excluding the cleanup from test order."""
                     sql(ROOT / "tests/contract/00-clean.sql")
@@ -51,7 +51,7 @@ def verify():
                             sql(path)
                     for path in sorted((ROOT / "tests/contract").glob("[0-9][0-9]-*.sh")):
                         command("sh", path)
-    
+
                 for name in names:
                     sql(ROOT / "deploy" / (name + ".sql"))
                 for name in names:
