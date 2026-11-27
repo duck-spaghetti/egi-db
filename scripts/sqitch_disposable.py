@@ -20,10 +20,13 @@ def verify():
     version = subprocess.check_output([binary / 'postgres', '--version'], text=True)
     if not version.startswith('postgres (PostgreSQL) 18.'):
         raise PrerequisiteError('PostgreSQL18 required')
-    with OwnedCluster(ROOT, binary, 65432, 'egi_contract') as cluster:
-        environment = {**cluster.environment, 'EGI_SQITCH': str(sqitch), 'EGI_PSQL': str(binary / 'psql')}
-        subprocess.run(['sh', ROOT / 'scripts/sqitch-contracts.sh'], cwd=ROOT,
-                       env=environment, check=True, timeout=540)
+    # Keep committed concurrency fixtures separate from clean structural reversion.
+    for phase in ("contracts", "revert-redeploy"):
+        with OwnedCluster(ROOT, binary, 65432, 'egi_contract') as cluster:
+            environment = {**cluster.environment, 'EGI_VERIFY_PHASE': phase, 'EGI_SQITCH': str(sqitch), 'EGI_PSQL': str(binary / 'psql')}
+            subprocess.run(['sh', ROOT / 'scripts/sqitch-contracts.sh'], cwd=ROOT,
+                           env=environment, check=True, timeout=540)
+
 
 
 if __name__ == '__main__':

@@ -244,3 +244,10 @@ owned `egi_workbench` cluster when invoked by the combined `egi_contract` suite;
 its committed roles/data cannot contaminate later fixtures or reference races.
 The native SQL and Sqitch registry paths both execute the actual race and retain
 their separate lifecycle evidence. No existing database is used.
+
+Committed concurrency fixtures intentionally exercise populated canonical state.
+The complete checks run their full contract sequence both on a first deployment
+and after structural revert/redeploy, using two fresh owned clusters. The second
+cluster starts empty for reversion: contract31's committed publication must not
+bypass migration026's real-data protection. Both native SQL and actual Sqitch
+registry checks retain all discovered contracts, with no migration guard changed.
