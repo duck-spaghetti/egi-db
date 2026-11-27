@@ -43,7 +43,7 @@ def verify():
                 """Discover SQL and concurrent checks once, excluding the cleanup from test order."""
                 sql(ROOT / "tests/contract/00-clean.sql")
                 for path in sorted((ROOT / "tests/contract").glob("[0-9][0-9]-*.sql")):
-                    if path.name != "00-clean.sql":
+                    if path.name != "00-clean.sql" and not path.with_suffix(".sh").is_file():
                         sql(path)
                 for path in sorted((ROOT / "tests/contract").glob("[0-9][0-9]-*.sh")):
                     command("sh", path)

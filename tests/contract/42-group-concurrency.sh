@@ -1,6 +1,17 @@
 #!/bin/sh
 # Actual independent owner/editor sessions, inherited owned cluster only.
 set -eu
+# The combined contract suite uses egi_contract; this committed race setup must
+# live in its own cluster so its roles/data cannot contaminate later fixtures.
+if [ "${PGDATABASE:-}" = egi_contract ]; then
+ case "${PGHOST:-}" in /private/tmp/egi-resource-*/pg-*) ;; *) echo 'requires owned contract socket' >&2; exit 1 ;; esac
+ : "${EGI_DEVTOOLS_SOURCE:?Explicit verified resource tooling required}"
+ EGI_RACE_TOOLS_REVISION=$(git -C "$EGI_DEVTOOLS_SOURCE" rev-parse HEAD)
+ EGI_RACE_THROUGH=$(awk '/^[0-9][0-9][0-9]_/ { change=$1 } END { print change }' sqitch.plan)
+ exec "${EGI_PYTHON:-python3}" scripts/verify-workbench.py --tools "$EGI_DEVTOOLS_SOURCE" \
+  --revision "$EGI_RACE_TOOLS_REVISION" --through "$EGI_RACE_THROUGH" \
+  --shell-check tests/contract/42-group-concurrency.sh
+fi
 case "${PGHOST:-}:${PGDATABASE:-}" in
  /private/tmp/egi-resource-*/pg-*:egi_workbench) ;;
  *) echo 'requires the owned workbench socket' >&2; exit 1 ;;

@@ -12,6 +12,7 @@ done
 "$EGI_PSQL" -X -v ON_ERROR_STOP=1 -f tests/contract/00-clean.sql
 for EGI_CHECK in tests/contract/[0-9][0-9]-*.sql; do
   [ "${EGI_CHECK##*/}" = "00-clean.sql" ] && continue
+  [ -f "${EGI_CHECK%.sql}.sh" ] && continue
   "$EGI_PSQL" -X -v ON_ERROR_STOP=1 -f "$EGI_CHECK"
 done
 for EGI_CONCURRENT in tests/contract/[0-9][0-9]-*.sh; do
@@ -23,6 +24,7 @@ done
 "$EGI_PSQL" -X -v ON_ERROR_STOP=1 -f tests/contract/00-clean.sql
 for EGI_CHECK in tests/contract/[0-9][0-9]-*.sql; do
   [ "${EGI_CHECK##*/}" = "00-clean.sql" ] && continue
+  [ -f "${EGI_CHECK%.sql}.sh" ] && continue
   "$EGI_PSQL" -X -v ON_ERROR_STOP=1 -f "$EGI_CHECK"
 done
 for EGI_CONCURRENT in tests/contract/[0-9][0-9]-*.sh; do

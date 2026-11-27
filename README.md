@@ -233,3 +233,14 @@ files and fails the check. Existing demo/legacy clusters and backups are untouch
 `scripts/sqitch-contracts.sh`; it is not a standalone database setup command.
 Keep selected Sqitch/Perl prerequisites from the setup guide. Resource-policy
 probes run with `python3 -m unittest discover -s tests -p test_resource_checks.py`.
+
+
+## Consolidated native verification
+
+The full runner discovers all SQL and concurrency contracts through the current
+plan. A SQL file with a same-stem shell check is that check's committed setup,
+not a standalone transaction test. The group concurrency check runs on a separate
+owned `egi_workbench` cluster when invoked by the combined `egi_contract` suite;
+its committed roles/data cannot contaminate later fixtures or reference races.
+The native SQL and Sqitch registry paths both execute the actual race and retain
+their separate lifecycle evidence. No existing database is used.
